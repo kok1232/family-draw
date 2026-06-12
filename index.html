@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMBA Family</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EMBA Family">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --card: #22263a;
+    --border: #2e3352;
+    --accent-114: #f5a623;
+    --accent-115: #4fc3f7;
+    --accent-glow-114: rgba(245,166,35,0.18);
+    --accent-glow-115: rgba(79,195,247,0.18);
+    --text: #e8eaf6;
+    --text-dim: #8892b0;
+    --green: #69f0ae;
+    --red: #ff5370;
+    --radius: 12px;
+    --transition: 0.22s cubic-bezier(.4,0,.2,1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  header {
+    width: 100%;
+    padding: 36px 24px 20px;
+    text-align: center;
+    background: linear-gradient(180deg, #131729 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+
+  header h1 {
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    font-weight: 900;
+    letter-spacing: .04em;
+    background: linear-gradient(90deg, var(--accent-114) 0%, var(--accent-115) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p {
+    color: var(--text-dim);
+    font-size: .9rem;
+    margin-top: 6px;
+  }
+
+  .container { width: 100%; max-width: 900px; padding: 0 20px 60px; }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 6px;
+    margin-bottom: 28px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: .92rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .tab.active {
+    color: var(--bg);
+    background: linear-gradient(90deg, var(--accent-114), var(--accent-115));
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── Input area ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    margin-bottom: 10px;
+  }
+
+  .badge-114 { background: var(--accent-glow-114); color: var(--accent-114); border: 1px solid var(--accent-114); }
+  .badge-115 { background: var(--accent-glow-115); color: var(--accent-115); border: 1px solid var(--accent-115); }
+
+  label { display: block; font-size: .88rem; color: var(--text-dim); margin-bottom: 6px; }
+
+  textarea {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: inherit;
+    font-size: .9rem;
+    line-height: 1.7;
+    padding: 14px 16px;
+    resize: vertical;
+    transition: border-color var(--transition);
+    outline: none;
+  }
+
+  textarea:focus { border-color: var(--accent-115); }
+  textarea::placeholder { color: var(--text-dim); }
+
+  .row { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; }
+  .col { flex: 1; min-width: 220px; }
+
+  .info-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    font-size: .82rem;
+    color: var(--text-dim);
+  }
+
+  .info-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 12px;
+  }
+
+  .info-chip span { color: var(--text); font-weight: 700; }
+
+  /* ── Settings ── */
+  .settings-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .settings-card h3 {
+    font-size: .88rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-bottom: 16px;
+  }
+
+  .setting-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .setting-row label { margin: 0; flex: 1; font-size: .92rem; color: var(--text); }
+
+  input[type=number] {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: .92rem;
+    padding: 8px 12px;
+    width: 80px;
+    text-align: center;
+    outline: none;
+  }
+
+  input[type=number]:focus { border-color: var(--accent-115); }
+
+  /* ── Action button ── */
+  .btn-draw {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(90deg, var(--accent-114), var(--accent-115));
+    border: none;
+    border-radius: var(--radius);
+    color: #0f1117;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: .06em;
+    cursor: pointer;
+    transition: opacity var(--transition), transform var(--transition);
+    margin-top: 8px;
+  }
+
+  .btn-draw:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-draw:active { transform: translateY(0); opacity: 1; }
+  .btn-draw:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+  /* ── Results ── */
+  #result-section { margin-top: 8px; }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .result-header h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .btn-copy, .btn-redraw {
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: .85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .btn-copy {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .btn-copy:hover { border-color: var(--accent-115); color: var(--accent-115); }
+
+  .btn-export {
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: .85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    background: transparent;
+    border: 1px solid var(--green);
+    color: var(--green);
+  }
+
+  .btn-export:hover { background: rgba(105,240,174,.1); }
+
+  .btn-redraw {
+    background: transparent;
+    border: 1px solid var(--accent-114);
+    color: var(--accent-114);
+  }
+
+  .btn-redraw:hover { background: var(--accent-glow-114); }
+
+  .families-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .family-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform var(--transition), border-color var(--transition);
+    animation: fadeUp .3s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .family-card:hover { transform: translateY(-3px); border-color: #3e4466; }
+
+  .family-card-header {
+    padding: 14px 16px 10px;
+    background: linear-gradient(135deg, #1e2237 0%, #252a42 100%);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .family-name {
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: .04em;
+  }
+
+  .family-count {
+    font-size: .78rem;
+    color: var(--text-dim);
+    background: var(--bg);
+    border-radius: 20px;
+    padding: 2px 9px;
+  }
+
+  .family-members { padding: 12px 16px; }
+
+  .member-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    font-size: .88rem;
+    border-bottom: 1px solid rgba(46,51,82,.5);
+  }
+
+  .member-row:last-child { border-bottom: none; }
+
+  .member-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-114 { background: var(--accent-114); }
+  .dot-115 { background: var(--accent-115); }
+
+  .member-batch {
+    font-size: .72rem;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .batch-114 { background: var(--accent-glow-114); color: var(--accent-114); }
+  .batch-115 { background: var(--accent-glow-115); color: var(--accent-115); }
+
+  .alert {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    font-size: .9rem;
+    margin-bottom: 16px;
+  }
+
+  .alert-error { background: rgba(255,83,112,.12); border: 1px solid rgba(255,83,112,.3); color: #ff8fa3; }
+  .alert-success { background: rgba(105,240,174,.1); border: 1px solid rgba(105,240,174,.25); color: var(--green); }
+
+  .summary-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .summary-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: .85rem;
+  }
+
+  .summary-chip strong { color: var(--text); }
+  .summary-chip span { color: var(--text-dim); }
+
+  .btn-row { display: flex; gap: 10px; }
+
+  @media (max-width: 480px) {
+    .families-grid { grid-template-columns: 1fr 1fr; }
+    .row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>EMBA Family</h1>
+  <p>家族隨機分配系統 · 每族固定 3 位 115 屆</p>
+</header>
+
+<div class="container">
+
+  <!-- Tabs -->
+  <div class="tabs" role="tablist">
+    <button class="tab active" onclick="switchTab('input')">名單輸入</button>
+    <button class="tab" onclick="switchTab('result')">抽籤結果</button>
+  </div>
+
+  <!-- Input Panel -->
+  <div id="tab-input" class="tab-panel active">
+
+    <div class="row">
+      <div class="col">
+        <div class="badge badge-114">114 屆</div>
+        <label>成員名單（每行一名，共 <span id="cnt114">0</span> 人）</label>
+        <textarea id="list114" rows="12" placeholder="范小明&#10;陳大華&#10;林美玲&#10;（每行一個名字）" oninput="updateCount('list114','cnt114')"></textarea>
+        <div class="info-bar">
+          <div class="info-chip">已輸入 <span id="cnt114b">0</span> 人</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="badge badge-115">115 屆</div>
+        <label>成員名單（每行一名，共 <span id="cnt115">0</span> 人）</label>
+        <textarea id="list115" rows="12" placeholder="王小凡&#10;李大偉&#10;張美芳&#10;（每行一個名字）" oninput="updateCount('list115','cnt115')"></textarea>
+        <div class="info-bar">
+          <div class="info-chip">已輸入 <span id="cnt115b">0</span> 人</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <h3>⚙ 分配設定</h3>
+      <div class="setting-row">
+        <label>每族 115 屆人數</label>
+        <input type="number" id="per115" value="3" min="1" max="10">
+      </div>
+      <div class="setting-row">
+        <label>家族名稱前綴（如「家族」→ 家族A）</label>
+        <input type="text" id="familyPrefix" value="家族" style="width:100px;text-align:left;padding-left:10px;" class="input-text">
+      </div>
+      <div id="preview-info" style="margin-top:10px;font-size:.85rem;color:var(--text-dim);"></div>
+    </div>
+
+    <button class="btn-draw" id="drawBtn" onclick="doAssign()">🎲 開始抽籤</button>
+  </div>
+
+  <!-- Result Panel -->
+  <div id="tab-result" class="tab-panel">
+    <div id="result-section">
+      <p style="color:var(--text-dim);text-align:center;padding:40px 0;">尚未抽籤，請先至「名單輸入」頁面進行抽籤。</p>
+    </div>
+  </div>
+
+</div>
+
+<style>
+  .input-text {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: .92rem;
+    padding: 8px 12px;
+    outline: none;
+  }
+  .input-text:focus { border-color: var(--accent-115); }
+</style>
+
+<script>
+  const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+  function updateCount(textareaId, spanId) {
+    const val = document.getElementById(textareaId).value.trim();
+    const count = val ? val.split('\n').filter(n => n.trim()).length : 0;
+    document.getElementById(spanId).textContent = count;
+    document.getElementById(spanId + 'b').textContent = count;
+    updatePreview();
+  }
+
+  function updatePreview() {
+    const n114 = parseInt(document.getElementById('cnt114').textContent) || 0;
+    const n115 = parseInt(document.getElementById('cnt115').textContent) || 0;
+    const per115 = parseInt(document.getElementById('per115')?.value) || 3;
+    const info = document.getElementById('preview-info');
+    if (!n115 && !n114) { info.innerHTML = ''; return; }
+    if (per115 < 1) { info.innerHTML = '<span style="color:var(--red)">每族115屆人數至少需1人</span>'; return; }
+    if (n115 % per115 !== 0) {
+      info.innerHTML = `<span style="color:var(--red)">⚠ 115屆人數 (${n115}) 無法被 ${per115} 整除，請調整設定或補齊名單</span>`;
+      return;
+    }
+    const numFamilies = n115 / per115;
+    const base = Math.floor(n114 / numFamilies);
+    const extra = n114 % numFamilies;
+    const minTotal = base + per115;
+    const maxTotal = (extra > 0) ? base + 1 + per115 : minTotal;
+    info.innerHTML = `預計分配 <strong style="color:var(--text)">${numFamilies}</strong> 個家族　·　每族 115 屆 ${per115} 人 + 114 屆 ${extra > 0 ? base+'~'+(base+1) : base} 人　·　每族共 <strong style="color:var(--text)">${minTotal}${maxTotal !== minTotal ? '~'+maxTotal : ''}</strong> 人`;
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['input','result'][i] === tab));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+  }
+
+  function getNames(id) {
+    return document.getElementById(id).value.split('\n').map(s => s.trim()).filter(Boolean);
+  }
+
+  function doAssign() {
+    const names114 = getNames('list114');
+    const names115 = getNames('list115');
+    const per115 = parseInt(document.getElementById('per115').value) || 3;
+    const prefix = document.getElementById('familyPrefix').value || '家族';
+
+    // Validation
+    const errors = [];
+    if (names115.length === 0) errors.push('請輸入 115 屆名單');
+    if (names114.length === 0) errors.push('請輸入 114 屆名單');
+    if (names115.length > 0 && names115.length % per115 !== 0)
+      errors.push(`115屆人數 (${names115.length}) 無法被每族人數 (${per115}) 整除`);
+
+    const resultSection = document.getElementById('result-section');
+
+    if (errors.length) {
+      switchTab('result');
+      resultSection.innerHTML = errors.map(e => `<div class="alert alert-error">❌ ${e}</div>`).join('');
+      return;
+    }
+
+    const shuffled114 = shuffle(names114);
+    const shuffled115 = shuffle(names115);
+    const numFamilies = names115.length / per115;
+
+    // Split 115 into groups of per115
+    const groups115 = [];
+    for (let i = 0; i < numFamilies; i++) {
+      groups115.push(shuffled115.slice(i * per115, (i + 1) * per115));
+    }
+
+    // Distribute 114 as evenly as possible
+    const groups114 = Array.from({length: numFamilies}, () => []);
+    shuffled114.forEach((name, idx) => groups114[idx % numFamilies].push(name));
+
+    // Build family objects
+    const families = groups115.map((g115, i) => ({
+      name: prefix + ALPHA[i],
+      members115: g115,
+      members114: groups114[i],
+    }));
+
+    // Render
+    const familyCards = families.map((f, idx) => {
+      const delay = idx * 0.06;
+      const total = f.members115.length + f.members114.length;
+      const rows115 = f.members115.map(n => `
+        <div class="member-row">
+          <div class="member-dot dot-115"></div>
+          <span style="flex:1">${n}</span>
+          <span class="member-batch batch-115">115</span>
+        </div>`).join('');
+      const rows114 = f.members114.map(n => `
+        <div class="member-row">
+          <div class="member-dot dot-114"></div>
+          <span style="flex:1">${n}</span>
+          <span class="member-batch batch-114">114</span>
+        </div>`).join('');
+      return `
+        <div class="family-card" style="animation-delay:${delay}s">
+          <div class="family-card-header">
+            <span class="family-name">${f.name}</span>
+            <span class="family-count">共 ${total} 人</span>
+          </div>
+          <div class="family-members">
+            ${rows115}
+            ${rows114}
+          </div>
+        </div>`;
+    }).join('');
+
+    resultSection.innerHTML = `
+      <div class="result-header">
+        <h2>🎉 抽籤完成！共 ${numFamilies} 個家族</h2>
+        <div class="btn-row">
+          <button class="btn-copy" onclick="copyResult(${numFamilies})">📋 複製名單</button>
+          <button class="btn-export" onclick="exportResult()">⬇ 匯出 CSV</button>
+          <button class="btn-redraw" onclick="doAssign()">🔀 重新抽籤</button>
+        </div>
+      </div>
+      <div class="summary-bar">
+        <div class="summary-chip"><strong>${names114.length}</strong> <span>位 114 屆</span></div>
+        <div class="summary-chip"><strong>${names115.length}</strong> <span>位 115 屆</span></div>
+        <div class="summary-chip"><strong>${numFamilies}</strong> <span>個家族</span></div>
+        <div class="summary-chip">每族 <strong>${per115}</strong> <span>位 115 屆</span></div>
+      </div>
+      <div class="families-grid">${familyCards}</div>`;
+
+    // Store for copy
+    window._lastFamilies = families;
+    switchTab('result');
+  }
+
+  function copyResult() {
+    if (!window._lastFamilies) return;
+    const lines = window._lastFamilies.map(f => {
+      const members = [...f.members115.map(n => n + '（115）'), ...f.members114.map(n => n + '（114）')];
+      return `【${f.name}】共${members.length}人\n` + members.map(m => '  ' + m).join('\n');
+    });
+    const text = lines.join('\n\n');
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.btn-copy');
+      const orig = btn.textContent;
+      btn.textContent = '✅ 已複製！';
+      setTimeout(() => btn.textContent = orig, 1800);
+    });
+  }
+
+  function exportResult() {
+    if (!window._lastFamilies) return;
+    const rows = [['家族', '姓名', '屆別']];
+    window._lastFamilies.forEach(f => {
+      f.members115.forEach(n => rows.push([f.name, n, '115']));
+      f.members114.forEach(n => rows.push([f.name, n, '114']));
+    });
+    const bom = '\uFEFF';
+    const csv = bom + rows.map(r => r.map(c => `"${c}"`).join(',')).join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '家族分組結果.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Init
+  document.getElementById('per115').addEventListener('input', updatePreview);
+</script>
+</body>
+</html>
