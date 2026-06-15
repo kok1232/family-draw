@@ -3,13 +3,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EMBA Family</title>
+<title>EMBA Family | 家族抽籤分組系統</title>
+
+<!-- SEO -->
+<meta name="description" content="EMBA Family 家族抽籤系統，專為 EMBA 家族活動設計，支援多屆成員隨機分配，每族固定 3 位 115 屆成員，公平抽籤一鍵完成，支援匯出 CSV。">
+<meta name="keywords" content="EMBA Family,家族抽籤,EMBA分組,家族分組,隨機抽籤,EMBA活動,家族活動,分組系統,抽籤工具,EMBA Taiwan">
+<meta name="author" content="kok1232">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://kok1232.github.io/family-draw/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kok1232.github.io/family-draw/">
+<meta property="og:title" content="EMBA Family | 家族抽籤分組系統">
+<meta property="og:description" content="EMBA Family 家族抽籤系統，專為 EMBA 家族活動設計，支援多屆成員隨機分配，每族固定 3 位 115 屆成員，公平抽籤一鍵完成。">
+<meta property="og:image" content="https://kok1232.github.io/family-draw/icons/icon-512.png">
+<meta property="og:locale" content="zh_TW">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="EMBA Family | 家族抽籤分組系統">
+<meta name="twitter:description" content="EMBA Family 家族抽籤系統，支援多屆成員隨機分配，公平抽籤一鍵完成。">
+<meta name="twitter:image" content="https://kok1232.github.io/family-draw/icons/icon-512.png">
+
+<!-- Geo -->
+<meta name="geo.region" content="TW">
+<meta name="geo.placename" content="Taiwan">
+<meta name="language" content="zh-TW">
+
+<!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f1117">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="EMBA Family">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "EMBA Family 家族抽籤系統",
+  "url": "https://kok1232.github.io/family-draw/",
+  "description": "專為 EMBA 家族活動設計的隨機抽籤系統，支援多屆成員分配，每族固定 3 位 115 屆成員，公平抽籤一鍵完成。",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "TWD"
+  },
+  "inLanguage": "zh-TW",
+  "isAccessibleForFree": true
+}
+</script>
+
 <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js');
