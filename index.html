@@ -1,700 +1,621 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EMBA Family | 家族抽籤分組系統</title>
-
-<!-- SEO -->
-<meta name="description" content="EMBA Family 家族抽籤系統，專為 EMBA 家族活動設計，支援多屆成員隨機分配，每族固定 3 位 115 屆成員，公平抽籤一鍵完成，支援匯出 CSV。">
-<meta name="keywords" content="EMBA Family,家族抽籤,EMBA分組,家族分組,隨機抽籤,EMBA活動,家族活動,分組系統,抽籤工具,EMBA Taiwan">
-<meta name="author" content="kok1232">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://kok1232.github.io/family-draw/">
-
-<!-- Open Graph -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://kok1232.github.io/family-draw/">
-<meta property="og:title" content="EMBA Family | 家族抽籤分組系統">
-<meta property="og:description" content="EMBA Family 家族抽籤系統，專為 EMBA 家族活動設計，支援多屆成員隨機分配，每族固定 3 位 115 屆成員，公平抽籤一鍵完成。">
-<meta property="og:image" content="https://kok1232.github.io/family-draw/icons/icon-512.png">
-<meta property="og:locale" content="zh_TW">
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="EMBA Family | 家族抽籤分組系統">
-<meta name="twitter:description" content="EMBA Family 家族抽籤系統，支援多屆成員隨機分配，公平抽籤一鍵完成。">
-<meta name="twitter:image" content="https://kok1232.github.io/family-draw/icons/icon-512.png">
-
-<!-- Geo -->
-<meta name="geo.region" content="TW">
-<meta name="geo.placename" content="Taiwan">
-<meta name="language" content="zh-TW">
-
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f1117">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="EMBA Family">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-
-<!-- Structured Data -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "EMBA Family 家族抽籤系統",
-  "url": "https://kok1232.github.io/family-draw/",
-  "description": "專為 EMBA 家族活動設計的隨機抽籤系統，支援多屆成員分配，每族固定 3 位 115 屆成員，公平抽籤一鍵完成。",
-  "applicationCategory": "UtilitiesApplication",
-  "operatingSystem": "Any",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "TWD"
-  },
-  "inLanguage": "zh-TW",
-  "isAccessibleForFree": true
-}
-</script>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>分派典禮｜家族抽籤儀式</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
-
-  :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --card: #22263a;
-    --border: #2e3352;
-    --accent-114: #f5a623;
-    --accent-115: #4fc3f7;
-    --accent-glow-114: rgba(245,166,35,0.18);
-    --accent-glow-115: rgba(79,195,247,0.18);
-    --text: #e8eaf6;
-    --text-dim: #8892b0;
-    --green: #69f0ae;
-    --red: #ff5370;
-    --radius: 12px;
-    --transition: 0.22s cubic-bezier(.4,0,.2,1);
+  :root{
+    --ink:#1B2A4A;
+    --ink-2:#2b3e63;
+    --parchment:#F5F0E1;
+    --parchment-2:#ece3cb;
+    --gold:#C9A227;
+    --gold-soft:#e8cf82;
+    --shadow: rgba(15,20,35,0.35);
   }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Noto Sans TC', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Noto Sans TC', sans-serif;
+    background:
+      radial-gradient(ellipse at 20% -10%, #2b3e63 0%, transparent 55%),
+      radial-gradient(ellipse at 90% 110%, #223258 0%, transparent 50%),
+      var(--ink);
+    color:var(--parchment);
+    min-height:100vh;
+    overflow-x:hidden;
   }
-
-  header {
-    width: 100%;
-    padding: 36px 24px 20px;
-    text-align: center;
-    background: linear-gradient(180deg, #131729 0%, transparent 100%);
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 32px;
+  .stars{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 80% 30%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1.5px 1.5px at 60% 70%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 30% 85%, rgba(255,255,255,.3), transparent),
+      radial-gradient(1px 1px at 92% 80%, rgba(255,255,255,.3), transparent);
+    background-repeat:no-repeat;
   }
+  h1,h2,h3,.serif{font-family:'Noto Serif TC', serif;}
+  .app{position:relative; z-index:1; max-width:960px; margin:0 auto; padding:32px 20px 80px;}
+  .brand{text-align:center; margin-bottom:28px;}
+  .brand .eyebrow{letter-spacing:.35em; font-size:11px; color:var(--gold-soft); text-transform:uppercase; margin-bottom:8px;}
+  .brand h1{font-size:clamp(28px,5vw,42px); font-weight:900; margin:0; color:var(--parchment);}
+  .brand .sub{font-size:13px; color:#a9b6d6; margin-top:6px;}
 
-  header h1 {
-    font-size: clamp(1.6rem, 4vw, 2.6rem);
-    font-weight: 900;
-    letter-spacing: .04em;
-    background: linear-gradient(90deg, var(--accent-114) 0%, var(--accent-115) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .card{
+    background: linear-gradient(180deg, rgba(245,240,225,.06), rgba(245,240,225,.02));
+    border:1px solid rgba(201,162,39,.28);
+    border-radius:18px;
+    padding:24px;
+    margin-bottom:20px;
+    backdrop-filter: blur(2px);
   }
-
-  header p {
-    color: var(--text-dim);
-    font-size: .9rem;
-    margin-top: 6px;
+  .card h2{font-size:18px; margin:0 0 16px; color:var(--gold-soft); font-weight:700;}
+  .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center;}
+  label{font-size:12px; color:#c3cce4; display:block; margin-bottom:4px;}
+  input[type=text], input[type=number], textarea, select{
+    background:rgba(10,16,32,.45);
+    border:1px solid rgba(201,162,39,.35);
+    color:var(--parchment);
+    border-radius:10px;
+    padding:9px 12px;
+    font-size:14px;
+    font-family:inherit;
+    outline:none;
   }
+  input[type=text]:focus, input[type=number]:focus, textarea:focus, select:focus{border-color:var(--gold);}
+  textarea{width:100%; min-height:90px; resize:vertical; line-height:1.6;}
+  input[type=color]{width:40px; height:36px; padding:2px; border-radius:8px; border:1px solid rgba(201,162,39,.35); background:transparent; cursor:pointer;}
 
-  .container { width: 100%; max-width: 900px; padding: 0 20px 60px; }
-
-  /* ── Tabs ── */
-  .tabs {
-    display: flex;
-    gap: 6px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 6px;
-    margin-bottom: 28px;
+  .btn{
+    appearance:none; border:none; cursor:pointer;
+    font-family:inherit; font-weight:700; font-size:14px;
+    padding:11px 20px; border-radius:999px;
+    background:var(--gold); color:#241a02;
+    transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+    box-shadow:0 6px 18px rgba(201,162,39,.25);
   }
+  .btn:hover{transform:translateY(-1px);}
+  .btn:disabled{opacity:.35; cursor:not-allowed; transform:none; box-shadow:none;}
+  .btn.ghost{background:transparent; color:var(--gold-soft); border:1px solid rgba(201,162,39,.4); box-shadow:none;}
+  .btn.danger{background:transparent; color:#e3a5a5; border:1px solid rgba(227,165,165,.45); box-shadow:none;}
+  .btn.small{padding:6px 14px; font-size:12px;}
 
-  .tab {
-    flex: 1;
-    padding: 10px 0;
-    border: none;
-    background: transparent;
-    color: var(--text-dim);
-    font-family: inherit;
-    font-size: .92rem;
-    font-weight: 700;
-    letter-spacing: .04em;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: var(--transition);
+  .family-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .family-row input[type=text]{flex:1; min-width:120px;}
+  .swatch{width:22px; height:22px; border-radius:50%; flex:none; border:2px solid rgba(255,255,255,.35);}
+
+  .cohort-block{border-top:1px dashed rgba(201,162,39,.25); padding-top:16px; margin-top:16px;}
+  .cohort-head{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;}
+  .pill{font-size:11px; padding:3px 10px; border-radius:999px; background:rgba(201,162,39,.15); color:var(--gold-soft); border:1px solid rgba(201,162,39,.3);}
+
+  /* Stage */
+  .stage{
+    display:flex; flex-direction:column; align-items:center; padding:40px 20px 30px;
   }
-
-  .tab.active {
-    color: var(--bg);
-    background: linear-gradient(90deg, var(--accent-114), var(--accent-115));
+  .progress-line{font-size:13px; color:#a9b6d6; margin-bottom:22px; letter-spacing:.05em;}
+  .dial-wrap{position:relative; width:min(78vw,300px); height:min(78vw,300px); margin-bottom:26px;}
+  .dial{
+    width:100%; height:100%; border-radius:50%;
+    box-shadow:0 20px 60px rgba(0,0,0,.45), inset 0 0 0 6px rgba(0,0,0,.25), inset 0 0 30px rgba(0,0,0,.35);
+    position:relative;
+    transition: filter .4s ease;
   }
-
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-
-  /* ── Input area ── */
-  .badge {
-    display: inline-block;
-    padding: 2px 10px;
-    border-radius: 20px;
-    font-size: .75rem;
-    font-weight: 700;
-    letter-spacing: .06em;
-    margin-bottom: 10px;
+  .dial-center{
+    position:absolute; left:50%; top:50%; width:34%; height:34%;
+    transform:translate(-50%,-50%); border-radius:50%;
+    background:radial-gradient(circle, var(--parchment) 0%, var(--parchment-2) 70%, #cbb98a 100%);
+    box-shadow:0 4px 14px rgba(0,0,0,.4), inset 0 0 8px rgba(0,0,0,.15);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Noto Serif TC',serif; font-weight:900; color:var(--ink);
+    font-size:12px; text-align:center; padding:6px; z-index:3;
   }
-
-  .badge-114 { background: var(--accent-glow-114); color: var(--accent-114); border: 1px solid var(--accent-114); }
-  .badge-115 { background: var(--accent-glow-115); color: var(--accent-115); border: 1px solid var(--accent-115); }
-
-  label { display: block; font-size: .88rem; color: var(--text-dim); margin-bottom: 6px; }
-
-  textarea {
-    width: 100%;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-family: inherit;
-    font-size: .9rem;
-    line-height: 1.7;
-    padding: 14px 16px;
-    resize: vertical;
-    transition: border-color var(--transition);
-    outline: none;
+  .needle{
+    position:absolute; left:50%; top:50%; width:6px; height:44%;
+    transform-origin:50% 100%;
+    transform:translate(-50%,-100%) rotate(0deg);
+    background:linear-gradient(180deg, var(--gold) 0%, #fff6d8 45%, var(--gold) 100%);
+    border-radius:6px 6px 2px 2px;
+    box-shadow:0 0 12px rgba(255,220,120,.7);
+    z-index:2;
   }
-
-  textarea:focus { border-color: var(--accent-115); }
-  textarea::placeholder { color: var(--text-dim); }
-
-  .row { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; }
-  .col { flex: 1; min-width: 220px; }
-
-  .info-bar {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-    font-size: .82rem;
-    color: var(--text-dim);
+  .needle::after{
+    content:''; position:absolute; left:50%; top:-4px; width:16px; height:16px;
+    transform:translateX(-50%); background:var(--gold); border-radius:50%;
+    box-shadow:0 0 10px rgba(255,220,120,.9);
   }
+  .needle.spinning{transition: transform 2.6s cubic-bezier(.15,.85,.25,1);}
 
-  .info-chip {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 3px 12px;
+  .reveal-card{
+    text-align:center; min-height:64px;
   }
+  .reveal-name{font-size:clamp(24px,5vw,34px); font-weight:900; margin:0 0 4px;}
+  .reveal-family{font-size:15px; font-weight:700; letter-spacing:.06em; opacity:0; transform:translateY(6px); transition:all .5s ease;}
+  .reveal-family.show{opacity:1; transform:translateY(0);}
 
-  .info-chip span { color: var(--text); font-weight: 700; }
+  .stage-actions{display:flex; gap:14px; margin-top:28px;}
 
-  /* ── Settings ── */
-  .settings-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 20px;
+  .tally{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:30px;}
+  .tally-item{
+    background:rgba(10,16,32,.4); border:1px solid rgba(201,162,39,.25); border-radius:12px;
+    padding:10px 14px; min-width:110px; text-align:center;
   }
+  .tally-dot{width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:6px;}
+  .tally-count{font-family:'Noto Serif TC',serif; font-weight:900; font-size:18px;}
+  .bar{height:5px; border-radius:999px; background:rgba(255,255,255,.12); margin-top:6px; overflow:hidden;}
+  .bar > i{display:block; height:100%; border-radius:999px;}
 
-  .settings-card h3 {
-    font-size: .88rem;
-    font-weight: 700;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    margin-bottom: 16px;
-  }
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th,td{padding:8px 10px; text-align:left; border-bottom:1px solid rgba(201,162,39,.18);}
+  th{color:var(--gold-soft); font-weight:700;}
 
-  .setting-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-  .setting-row label { margin: 0; flex: 1; font-size: .92rem; color: var(--text); }
-
-  input[type=number] {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: inherit;
-    font-size: .92rem;
-    padding: 8px 12px;
-    width: 80px;
-    text-align: center;
-    outline: none;
-  }
-
-  input[type=number]:focus { border-color: var(--accent-115); }
-
-  /* ── Action button ── */
-  .btn-draw {
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(90deg, var(--accent-114), var(--accent-115));
-    border: none;
-    border-radius: var(--radius);
-    color: #0f1117;
-    font-family: inherit;
-    font-size: 1.05rem;
-    font-weight: 900;
-    letter-spacing: .06em;
-    cursor: pointer;
-    transition: opacity var(--transition), transform var(--transition);
-    margin-top: 8px;
-  }
-
-  .btn-draw:hover { opacity: .9; transform: translateY(-1px); }
-  .btn-draw:active { transform: translateY(0); opacity: 1; }
-  .btn-draw:disabled { opacity: .4; cursor: not-allowed; transform: none; }
-
-  /* ── Results ── */
-  #result-section { margin-top: 8px; }
-
-  .result-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  .result-header h2 {
-    font-size: 1.1rem;
-    font-weight: 700;
-  }
-
-  .btn-copy, .btn-redraw {
-    padding: 8px 18px;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: .85rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: var(--transition);
-  }
-
-  .btn-copy {
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--text);
-  }
-
-  .btn-copy:hover { border-color: var(--accent-115); color: var(--accent-115); }
-
-  .btn-export {
-    padding: 8px 18px;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: .85rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: var(--transition);
-    background: transparent;
-    border: 1px solid var(--green);
-    color: var(--green);
-  }
-
-  .btn-export:hover { background: rgba(105,240,174,.1); }
-
-  .btn-redraw {
-    background: transparent;
-    border: 1px solid var(--accent-114);
-    color: var(--accent-114);
-  }
-
-  .btn-redraw:hover { background: var(--accent-glow-114); }
-
-  .families-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
-  }
-
-  .family-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    transition: transform var(--transition), border-color var(--transition);
-    animation: fadeUp .3s ease both;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .family-card:hover { transform: translateY(-3px); border-color: #3e4466; }
-
-  .family-card-header {
-    padding: 14px 16px 10px;
-    background: linear-gradient(135deg, #1e2237 0%, #252a42 100%);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .family-name {
-    font-size: 1rem;
-    font-weight: 900;
-    letter-spacing: .04em;
-  }
-
-  .family-count {
-    font-size: .78rem;
-    color: var(--text-dim);
-    background: var(--bg);
-    border-radius: 20px;
-    padding: 2px 9px;
-  }
-
-  .family-members { padding: 12px 16px; }
-
-  .member-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 5px 0;
-    font-size: .88rem;
-    border-bottom: 1px solid rgba(46,51,82,.5);
-  }
-
-  .member-row:last-child { border-bottom: none; }
-
-  .member-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .dot-114 { background: var(--accent-114); }
-  .dot-115 { background: var(--accent-115); }
-
-  .member-batch {
-    font-size: .72rem;
-    padding: 1px 7px;
-    border-radius: 10px;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  .batch-114 { background: var(--accent-glow-114); color: var(--accent-114); }
-  .batch-115 { background: var(--accent-glow-115); color: var(--accent-115); }
-
-  .alert {
-    padding: 12px 16px;
-    border-radius: var(--radius);
-    font-size: .9rem;
-    margin-bottom: 16px;
-  }
-
-  .alert-error { background: rgba(255,83,112,.12); border: 1px solid rgba(255,83,112,.3); color: #ff8fa3; }
-  .alert-success { background: rgba(105,240,174,.1); border: 1px solid rgba(105,240,174,.25); color: var(--green); }
-
-  .summary-bar {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-  }
-
-  .summary-chip {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: .85rem;
-  }
-
-  .summary-chip strong { color: var(--text); }
-  .summary-chip span { color: var(--text-dim); }
-
-  .btn-row { display: flex; gap: 10px; }
-
-  @media (max-width: 480px) {
-    .families-grid { grid-template-columns: 1fr 1fr; }
-    .row { flex-direction: column; }
+  .top-actions{display:flex; justify-content:flex-end; gap:10px; margin-bottom:10px;}
+  .hint{font-size:12px; color:#8d99bc; margin-top:6px; line-height:1.6;}
+  .empty{text-align:center; color:#8d99bc; padding:30px 0; font-size:14px;}
+  .flex-between{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;}
+  select{cursor:pointer;}
+  ::selection{background:rgba(201,162,39,.4);}
+  @media (max-width:520px){
+    .stage-actions{flex-direction:column; width:100%;}
+    .stage-actions .btn{width:100%;}
   }
 </style>
 </head>
 <body>
-
-<header>
-  <h1>EMBA Family</h1>
-  <p>家族隨機分配系統 · 每族固定 3 位 115 屆</p>
-</header>
-
-<div class="container">
-
-  <!-- Tabs -->
-  <div class="tabs" role="tablist">
-    <button class="tab active" onclick="switchTab('input')">名單輸入</button>
-    <button class="tab" onclick="switchTab('result')">抽籤結果</button>
+<div class="stars"></div>
+<div class="app">
+  <div class="brand">
+    <div class="eyebrow">National Dong Hwa EMBA</div>
+    <h1>分派典禮</h1>
+    <div class="sub">每一屆，平均分配到每個家族 — 但每一位，都是被單獨唱名的</div>
   </div>
 
-  <!-- Input Panel -->
-  <div id="tab-input" class="tab-panel active">
+  <!-- SETUP VIEW -->
+  <div id="view-setup">
+    <div class="card">
+      <div class="flex-between">
+        <h2>家族設定</h2>
+        <button class="btn ghost small" onclick="addFamily()">＋ 新增家族</button>
+      </div>
+      <div id="family-list"></div>
+      <div class="hint">建議 3～6 個家族。顏色會用在羅盤與名單標示上，請盡量選擇彼此有區隔的顏色。</div>
+    </div>
 
-    <div class="row">
-      <div class="col">
-        <div class="badge badge-114">114 屆</div>
-        <label>成員名單（每行一名，共 <span id="cnt114">0</span> 人）</label>
-        <textarea id="list114" rows="12" placeholder="范小明&#10;陳大華&#10;林美玲&#10;（每行一個名字）" oninput="updateCount('list114','cnt114')"></textarea>
-        <div class="info-bar">
-          <div class="info-chip">已輸入 <span id="cnt114b">0</span> 人</div>
+    <div class="card">
+      <div class="flex-between">
+        <h2>屆別名單</h2>
+        <button class="btn ghost small" onclick="addCohort()">＋ 新增屆別</button>
+      </div>
+      <div id="cohort-list"></div>
+      <div class="hint">每個屆別貼上名單（一行一位）。系統會在該屆內，把人數盡量平均分給每個家族，多出的名額會隨機分配給不同家族，不會每次都是同一個家族多一位。</div>
+    </div>
+
+    <div class="card">
+      <h2>開始儀式</h2>
+      <div class="row" style="gap:16px; align-items:flex-end;">
+        <div>
+          <label>選擇要進行的屆別</label>
+          <select id="cohort-select"></select>
         </div>
+        <button class="btn" id="start-btn" onclick="startCeremony()">開始這一屆的分派</button>
       </div>
-      <div class="col">
-        <div class="badge badge-115">115 屆</div>
-        <label>成員名單（每行一名，共 <span id="cnt115">0</span> 人）</label>
-        <textarea id="list115" rows="12" placeholder="王小凡&#10;李大偉&#10;張美芳&#10;（每行一個名字）" oninput="updateCount('list115','cnt115')"></textarea>
-        <div class="info-bar">
-          <div class="info-chip">已輸入 <span id="cnt115b">0</span> 人</div>
+      <div class="hint" id="setup-warning"></div>
+    </div>
+
+    <div class="card" id="past-results-card" style="display:none;">
+      <div class="flex-between">
+        <h2>已完成的屆別</h2>
+        <button class="btn ghost small" onclick="exportAllCSV()">匯出全部結果 CSV</button>
+      </div>
+      <div id="past-results-list"></div>
+    </div>
+  </div>
+
+  <!-- STAGE VIEW -->
+  <div id="view-stage" style="display:none;">
+    <div class="top-actions">
+      <button class="btn ghost small" onclick="backToSetup()">← 返回設定</button>
+    </div>
+    <div class="card">
+      <div class="stage">
+        <div class="progress-line" id="stage-progress">第 1 / 1 位　｜　114屆</div>
+
+        <div class="dial-wrap">
+          <div class="dial" id="dial"></div>
+          <div class="needle" id="needle"></div>
+          <div class="dial-center" id="dial-center">準備中</div>
         </div>
-      </div>
-    </div>
 
-    <div class="settings-card">
-      <h3>⚙ 分配設定</h3>
-      <div class="setting-row">
-        <label>每族 115 屆人數</label>
-        <input type="number" id="per115" value="3" min="1" max="10">
-      </div>
-      <div class="setting-row">
-        <label>家族名稱前綴（如「家族」→ 家族A）</label>
-        <input type="text" id="familyPrefix" value="家族" style="width:100px;text-align:left;padding-left:10px;" class="input-text">
-      </div>
-      <div id="preview-info" style="margin-top:10px;font-size:.85rem;color:var(--text-dim);"></div>
-    </div>
+        <div class="reveal-card">
+          <p class="reveal-name" id="reveal-name">﹘</p>
+          <p class="reveal-family" id="reveal-family">分配至　家族名稱</p>
+        </div>
 
-    <button class="btn-draw" id="drawBtn" onclick="doAssign()">🎲 開始抽籤</button>
-  </div>
+        <div class="stage-actions">
+          <button class="btn" id="sort-btn" onclick="runSort()">唱名分類</button>
+          <button class="btn ghost" id="next-btn" onclick="nextStudent()" disabled>下一位 →</button>
+        </div>
 
-  <!-- Result Panel -->
-  <div id="tab-result" class="tab-panel">
-    <div id="result-section">
-      <p style="color:var(--text-dim);text-align:center;padding:40px 0;">尚未抽籤，請先至「名單輸入」頁面進行抽籤。</p>
+        <div class="tally" id="tally"></div>
+      </div>
     </div>
   </div>
 
+  <!-- COHORT DONE VIEW -->
+  <div id="view-done" style="display:none;">
+    <div class="card">
+      <h2 id="done-title">本屆分派完成</h2>
+      <table id="done-table"><thead><tr><th>#</th><th>姓名</th><th>家族</th></tr></thead><tbody></tbody></table>
+      <div class="row" style="margin-top:18px;">
+        <button class="btn" onclick="backToSetup()">返回設定，進行下一屆</button>
+        <button class="btn ghost" onclick="exportCohortCSV()">匯出本屆 CSV</button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<style>
-  .input-text {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: inherit;
-    font-size: .92rem;
-    padding: 8px 12px;
-    outline: none;
-  }
-  .input-text:focus { border-color: var(--accent-115); }
-</style>
-
 <script>
-  const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+/* ---------- 狀態 ---------- */
+const DEFAULT_FAMILIES = [
+  {name:'翊風家族', color:'#8B2635'},
+  {name:'凌岳家族', color:'#1D3F72'},
+  {name:'臨川家族', color:'#2D5A3D'},
+  {name:'昭曜家族', color:'#B8860B'},
+];
 
-  function updateCount(textareaId, spanId) {
-    const val = document.getElementById(textareaId).value.trim();
-    const count = val ? val.split('\n').filter(n => n.trim()).length : 0;
-    document.getElementById(spanId).textContent = count;
-    document.getElementById(spanId + 'b').textContent = count;
-    updatePreview();
+let state = {
+  families: JSON.parse(JSON.stringify(DEFAULT_FAMILIES)),
+  cohorts: [ { name:'114屆', raw:'' }, { name:'115屆', raw:'' } ],
+  results: {} // cohortName -> [{name, familyIndex}]
+};
+
+let ceremony = null; // {cohortName, queue:[{name}], index, assignments:[{name,familyIndex}]}
+
+/* ---------- 工具 ---------- */
+function uid(){return Math.random().toString(36).slice(2,9);}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
   }
+  return a;
+}
+function parseNames(raw){
+  return raw.split('\n').map(s=>s.trim()).filter(Boolean);
+}
 
-  function updatePreview() {
-    const n114 = parseInt(document.getElementById('cnt114').textContent) || 0;
-    const n115 = parseInt(document.getElementById('cnt115').textContent) || 0;
-    const per115 = parseInt(document.getElementById('per115')?.value) || 3;
-    const info = document.getElementById('preview-info');
-    if (!n115 && !n114) { info.innerHTML = ''; return; }
-    if (per115 < 1) { info.innerHTML = '<span style="color:var(--red)">每族115屆人數至少需1人</span>'; return; }
-    if (n115 % per115 !== 0) {
-      info.innerHTML = `<span style="color:var(--red)">⚠ 115屆人數 (${n115}) 無法被 ${per115} 整除，請調整設定或補齊名單</span>`;
-      return;
-    }
-    const numFamilies = n115 / per115;
-    const base = Math.floor(n114 / numFamilies);
-    const extra = n114 % numFamilies;
-    const minTotal = base + per115;
-    const maxTotal = (extra > 0) ? base + 1 + per115 : minTotal;
-    info.innerHTML = `預計分配 <strong style="color:var(--text)">${numFamilies}</strong> 個家族　·　每族 115 屆 ${per115} 人 + 114 屆 ${extra > 0 ? base+'~'+(base+1) : base} 人　·　每族共 <strong style="color:var(--text)">${minTotal}${maxTotal !== minTotal ? '~'+maxTotal : ''}</strong> 人`;
-  }
+/* ---------- 家族設定 UI ---------- */
+function renderFamilies(){
+  const wrap = document.getElementById('family-list');
+  wrap.innerHTML = '';
+  state.families.forEach((f, idx)=>{
+    const row = document.createElement('div');
+    row.className = 'family-row';
+    row.innerHTML = `
+      <input type="color" value="${f.color}" onchange="updateFamily(${idx},'color',this.value)">
+      <input type="text" value="${f.name}" placeholder="家族名稱" onchange="updateFamily(${idx},'name',this.value)">
+      <button class="btn danger small" onclick="removeFamily(${idx})" ${state.families.length<=2?'disabled':''}>移除</button>
+    `;
+    wrap.appendChild(row);
+  });
+}
+function addFamily(){
+  const palette = ['#6B4C93','#4A5859','#9C4A2B','#2A6F77','#7A5C2E','#3E4A89'];
+  const color = palette[state.families.length % palette.length];
+  state.families.push({name:`家族${state.families.length+1}`, color});
+  renderFamilies();
+  refreshCohortSelect();
+}
+function removeFamily(idx){
+  if(state.families.length<=2) return;
+  state.families.splice(idx,1);
+  renderFamilies();
+  refreshCohortSelect();
+}
+function updateFamily(idx,key,val){
+  state.families[idx][key]=val;
+}
 
-  function shuffle(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  function switchTab(tab) {
-    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['input','result'][i] === tab));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('tab-' + tab).classList.add('active');
-  }
-
-  function getNames(id) {
-    return document.getElementById(id).value.split('\n').map(s => s.trim()).filter(Boolean);
-  }
-
-  function doAssign() {
-    const names114 = getNames('list114');
-    const names115 = getNames('list115');
-    const per115 = parseInt(document.getElementById('per115').value) || 3;
-    const prefix = document.getElementById('familyPrefix').value || '家族';
-
-    // Validation
-    const errors = [];
-    if (names115.length === 0) errors.push('請輸入 115 屆名單');
-    if (names114.length === 0) errors.push('請輸入 114 屆名單');
-    if (names115.length > 0 && names115.length % per115 !== 0)
-      errors.push(`115屆人數 (${names115.length}) 無法被每族人數 (${per115}) 整除`);
-
-    const resultSection = document.getElementById('result-section');
-
-    if (errors.length) {
-      switchTab('result');
-      resultSection.innerHTML = errors.map(e => `<div class="alert alert-error">❌ ${e}</div>`).join('');
-      return;
-    }
-
-    const shuffled114 = shuffle(names114);
-    const shuffled115 = shuffle(names115);
-    const numFamilies = names115.length / per115;
-
-    // Split 115 into groups of per115
-    const groups115 = [];
-    for (let i = 0; i < numFamilies; i++) {
-      groups115.push(shuffled115.slice(i * per115, (i + 1) * per115));
-    }
-
-    // Distribute 114 as evenly as possible
-    const groups114 = Array.from({length: numFamilies}, () => []);
-    shuffled114.forEach((name, idx) => groups114[idx % numFamilies].push(name));
-
-    // Build family objects
-    const families = groups115.map((g115, i) => ({
-      name: prefix + ALPHA[i],
-      members115: g115,
-      members114: groups114[i],
-    }));
-
-    // Render
-    const familyCards = families.map((f, idx) => {
-      const delay = idx * 0.06;
-      const total = f.members115.length + f.members114.length;
-      const rows115 = f.members115.map(n => `
-        <div class="member-row">
-          <div class="member-dot dot-115"></div>
-          <span style="flex:1">${n}</span>
-          <span class="member-batch batch-115">115</span>
-        </div>`).join('');
-      const rows114 = f.members114.map(n => `
-        <div class="member-row">
-          <div class="member-dot dot-114"></div>
-          <span style="flex:1">${n}</span>
-          <span class="member-batch batch-114">114</span>
-        </div>`).join('');
-      return `
-        <div class="family-card" style="animation-delay:${delay}s">
-          <div class="family-card-header">
-            <span class="family-name">${f.name}</span>
-            <span class="family-count">共 ${total} 人</span>
-          </div>
-          <div class="family-members">
-            ${rows115}
-            ${rows114}
-          </div>
-        </div>`;
-    }).join('');
-
-    resultSection.innerHTML = `
-      <div class="result-header">
-        <h2>🎉 抽籤完成！共 ${numFamilies} 個家族</h2>
-        <div class="btn-row">
-          <button class="btn-copy" onclick="copyResult(${numFamilies})">📋 複製名單</button>
-          <button class="btn-export" onclick="exportResult()">⬇ 匯出 CSV</button>
-          <button class="btn-redraw" onclick="doAssign()">🔀 重新抽籤</button>
-        </div>
+/* ---------- 屆別設定 UI ---------- */
+function renderCohorts(){
+  const wrap = document.getElementById('cohort-list');
+  wrap.innerHTML = '';
+  state.cohorts.forEach((c, idx)=>{
+    const names = parseNames(c.raw);
+    const block = document.createElement('div');
+    block.className = 'cohort-block';
+    block.innerHTML = `
+      <div class="cohort-head">
+        <input type="text" value="${c.name}" style="font-weight:700;" onchange="updateCohortName(${idx},this.value)">
+        <span class="pill">${names.length} 人</span>
+        <button class="btn danger small" onclick="removeCohort(${idx})" ${state.cohorts.length<=1?'disabled':''}>移除此屆</button>
       </div>
-      <div class="summary-bar">
-        <div class="summary-chip"><strong>${names114.length}</strong> <span>位 114 屆</span></div>
-        <div class="summary-chip"><strong>${names115.length}</strong> <span>位 115 屆</span></div>
-        <div class="summary-chip"><strong>${numFamilies}</strong> <span>個家族</span></div>
-        <div class="summary-chip">每族 <strong>${per115}</strong> <span>位 115 屆</span></div>
-      </div>
-      <div class="families-grid">${familyCards}</div>`;
+      <textarea placeholder="貼上名單，一行一位" oninput="updateCohortRaw(${idx},this.value)">${c.raw}</textarea>
+    `;
+    wrap.appendChild(block);
+  });
+  refreshCohortSelect();
+}
+function addCohort(){
+  state.cohorts.push({name:`第${state.cohorts.length+1}屆`, raw:''});
+  renderCohorts();
+}
+function removeCohort(idx){
+  if(state.cohorts.length<=1) return;
+  const removedName = state.cohorts[idx].name;
+  state.cohorts.splice(idx,1);
+  delete state.results[removedName];
+  renderCohorts();
+  renderPastResults();
+}
+function updateCohortName(idx,val){
+  const oldName = state.cohorts[idx].name;
+  if(state.results[oldName]){
+    state.results[val] = state.results[oldName];
+    delete state.results[oldName];
+  }
+  state.cohorts[idx].name = val;
+  refreshCohortSelect();
+  renderPastResults();
+}
+function updateCohortRaw(idx,val){
+  state.cohorts[idx].raw = val;
+  const pill = document.querySelectorAll('.cohort-block .pill')[idx];
+  if(pill) pill.textContent = `${parseNames(val).length} 人`;
+}
 
-    // Store for copy
-    window._lastFamilies = families;
-    switchTab('result');
+function refreshCohortSelect(){
+  const sel = document.getElementById('cohort-select');
+  const currentVal = sel.value;
+  sel.innerHTML = '';
+  state.cohorts.forEach(c=>{
+    const opt = document.createElement('option');
+    opt.value = c.name;
+    const done = state.results[c.name] ? '（已完成，重跑將覆蓋）' : '';
+    opt.textContent = c.name + done;
+    sel.appendChild(opt);
+  });
+  if([...sel.options].some(o=>o.value===currentVal)) sel.value = currentVal;
+}
+
+/* ---------- 分配演算法 ---------- */
+function assignFairly(names, familyCount){
+  const n = names.length;
+  const base = Math.floor(n / familyCount);
+  const remainder = n % familyCount;
+  const quotas = new Array(familyCount).fill(base);
+  const extraFamilies = shuffle([...Array(familyCount).keys()]).slice(0, remainder);
+  extraFamilies.forEach(i => quotas[i]++);
+
+  let familyPool = [];
+  quotas.forEach((q, familyIdx)=>{ for(let i=0;i<q;i++) familyPool.push(familyIdx); });
+  familyPool = shuffle(familyPool);
+
+  const shuffledNames = shuffle(names);
+  return shuffledNames.map((name, i)=>({name, familyIndex: familyPool[i]}));
+}
+
+/* ---------- 儀式流程 ---------- */
+function startCeremony(){
+  const sel = document.getElementById('cohort-select');
+  const cohortName = sel.value;
+  const cohort = state.cohorts.find(c=>c.name===cohortName);
+  const names = parseNames(cohort.raw);
+  const warn = document.getElementById('setup-warning');
+  warn.textContent = '';
+
+  if(!cohort){ return; }
+  if(names.length === 0){
+    warn.textContent = `「${cohortName}」目前沒有名單，請先貼上學員姓名。`;
+    return;
+  }
+  if(state.families.length < 2){
+    warn.textContent = '請至少設定 2 個家族。';
+    return;
   }
 
-  function copyResult() {
-    if (!window._lastFamilies) return;
-    const lines = window._lastFamilies.map(f => {
-      const members = [...f.members115.map(n => n + '（115）'), ...f.members114.map(n => n + '（114）')];
-      return `【${f.name}】共${members.length}人\n` + members.map(m => '  ' + m).join('\n');
-    });
-    const text = lines.join('\n\n');
-    navigator.clipboard.writeText(text).then(() => {
-      const btn = document.querySelector('.btn-copy');
-      const orig = btn.textContent;
-      btn.textContent = '✅ 已複製！';
-      setTimeout(() => btn.textContent = orig, 1800);
-    });
-  }
+  const assignments = assignFairly(names, state.families.length);
+  ceremony = {
+    cohortName,
+    queue: shuffle(assignments), // 揭曉順序打亂，跟分配結果彼此獨立
+    index: 0,
+    done: []
+  };
 
-  function exportResult() {
-    if (!window._lastFamilies) return;
-    const rows = [['家族', '姓名', '屆別']];
-    window._lastFamilies.forEach(f => {
-      f.members115.forEach(n => rows.push([f.name, n, '115']));
-      f.members114.forEach(n => rows.push([f.name, n, '114']));
-    });
-    const bom = '\uFEFF';
-    const csv = bom + rows.map(r => r.map(c => `"${c}"`).join(',')).join('\r\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = '家族分組結果.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  document.getElementById('view-setup').style.display = 'none';
+  document.getElementById('view-done').style.display = 'none';
+  document.getElementById('view-stage').style.display = 'block';
+  buildDial();
+  renderTally();
+  showCurrentStudent();
+}
 
-  // Init
-  document.getElementById('per115').addEventListener('input', updatePreview);
+function buildDial(){
+  const dial = document.getElementById('dial');
+  const n = state.families.length;
+  const seg = 360/n;
+  const stops = state.families.map((f,i)=>`${f.color} ${i*seg}deg ${(i+1)*seg}deg`).join(', ');
+  dial.style.background = `conic-gradient(${stops})`;
+}
+
+function showCurrentStudent(){
+  const {queue, index, cohortName} = ceremony;
+  document.getElementById('stage-progress').textContent = `第 ${index+1} / ${queue.length} 位　｜　${cohortName}`;
+  document.getElementById('reveal-name').textContent = queue[index].name;
+  const rf = document.getElementById('reveal-family');
+  rf.classList.remove('show');
+  rf.textContent = '';
+  document.getElementById('dial-center').textContent = '準備中';
+  document.getElementById('dial-center').style.color = '';
+  document.getElementById('sort-btn').disabled = false;
+  document.getElementById('sort-btn').textContent = '唱名分類';
+  document.getElementById('next-btn').disabled = true;
+
+  const needle = document.getElementById('needle');
+  needle.classList.remove('spinning');
+  // 重置角度但不要有動畫感
+  needle.style.transition = 'none';
+  needle.style.transform = `translate(-50%,-100%) rotate(0deg)`;
+  void needle.offsetWidth; // reflow
+}
+
+function runSort(){
+  const {queue, index} = ceremony;
+  const current = queue[index];
+  const family = state.families[current.familyIndex];
+  const n = state.families.length;
+  const seg = 360/n;
+  const targetAngle = current.familyIndex*seg + seg/2;
+  const spins = 4*360 + targetAngle;
+
+  const needle = document.getElementById('needle');
+  needle.classList.add('spinning');
+  needle.style.transition = 'transform 2.6s cubic-bezier(.15,.85,.25,1)';
+  needle.style.transform = `translate(-50%,-100%) rotate(${spins}deg)`;
+
+  document.getElementById('sort-btn').disabled = true;
+
+  setTimeout(()=>{
+    const center = document.getElementById('dial-center');
+    center.textContent = family.name;
+    center.style.color = '#241a02';
+    const rf = document.getElementById('reveal-family');
+    rf.textContent = `分配至　${family.name}`;
+    rf.style.color = family.color;
+    rf.classList.add('show');
+
+    ceremony.done.push(current);
+    updateTallyCounts();
+    document.getElementById('next-btn').disabled = false;
+    document.getElementById('sort-btn').textContent = '已分類';
+  }, 2650);
+}
+
+function nextStudent(){
+  ceremony.index++;
+  if(ceremony.index >= ceremony.queue.length){
+    finishCeremony();
+    return;
+  }
+  showCurrentStudent();
+}
+
+function finishCeremony(){
+  state.results[ceremony.cohortName] = ceremony.done;
+  document.getElementById('view-stage').style.display = 'none';
+  document.getElementById('view-done').style.display = 'block';
+  document.getElementById('done-title').textContent = `${ceremony.cohortName}　分派完成`;
+  const tbody = document.querySelector('#done-table tbody');
+  tbody.innerHTML = '';
+  ceremony.done.forEach((d,i)=>{
+    const fam = state.families[d.familyIndex];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td><td>${escapeHtml(d.name)}</td><td style="color:${fam.color};font-weight:700;">${escapeHtml(fam.name)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function backToSetup(){
+  ceremony = null;
+  document.getElementById('view-stage').style.display = 'none';
+  document.getElementById('view-done').style.display = 'none';
+  document.getElementById('view-setup').style.display = 'block';
+  refreshCohortSelect();
+  renderPastResults();
+}
+
+/* ---------- 即時累計看板 ---------- */
+function renderTally(){
+  const tally = document.getElementById('tally');
+  tally.innerHTML = '';
+  state.families.forEach((f)=>{
+    const div = document.createElement('div');
+    div.className = 'tally-item';
+    div.id = `tally-${f.name}`;
+    div.innerHTML = `
+      <div><span class="tally-dot" style="background:${f.color}"></span>${escapeHtml(f.name)}</div>
+      <div class="tally-count" data-count="0">0</div>
+      <div class="bar"><i style="width:0%; background:${f.color};"></i></div>
+    `;
+    tally.appendChild(div);
+  });
+}
+function updateTallyCounts(){
+  const totalByFamily = new Array(state.families.length).fill(0);
+  ceremony.done.forEach(d=> totalByFamily[d.familyIndex]++);
+  const total = ceremony.done.length;
+  state.families.forEach((f,i)=>{
+    const el = document.getElementById(`tally-${f.name}`);
+    if(!el) return;
+    el.querySelector('.tally-count').textContent = totalByFamily[i];
+    const pct = total ? Math.round((totalByFamily[i]/ceremony.queue.length)*100) : 0;
+    el.querySelector('.bar > i').style.width = pct+'%';
+  });
+}
+
+/* ---------- 過往結果 / 匯出 ---------- */
+function renderPastResults(){
+  const card = document.getElementById('past-results-card');
+  const list = document.getElementById('past-results-list');
+  const names = Object.keys(state.results);
+  if(names.length===0){ card.style.display='none'; return; }
+  card.style.display = 'block';
+  list.innerHTML = '';
+  names.forEach(name=>{
+    const arr = state.results[name];
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.style.justifyContent = 'space-between';
+    row.style.marginBottom = '8px';
+    row.innerHTML = `<span>${escapeHtml(name)}　<span class="pill">${arr.length} 人已分派</span></span>`;
+    list.appendChild(row);
+  });
+}
+
+function toCSV(rows){
+  const header = 'ID,姓名,家族\n';
+  const body = rows.map((d,i)=>`${i+1},${d.name},${state.families[d.familyIndex].name}`).join('\n');
+  return '\uFEFF'+header+body;
+}
+function downloadCSV(filename, content){
+  const blob = new Blob([content], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function exportCohortCSV(){
+  if(!ceremony) return;
+  downloadCSV(`${ceremony.cohortName}_分派結果.csv`, toCSV(ceremony.done));
+}
+function exportAllCSV(){
+  const header = 'ID,屆別,姓名,家族\n';
+  let rows = [];
+  Object.keys(state.results).forEach(cohortName=>{
+    state.results[cohortName].forEach(d=>{
+      rows.push(`${rows.length+1},${cohortName},${d.name},${state.families[d.familyIndex].name}`);
+    });
+  });
+  downloadCSV('全部屆別_分派結果.csv', '\uFEFF'+header+rows.join('\n'));
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ---------- 初始化 ---------- */
+renderFamilies();
+renderCohorts();
+renderPastResults();
 </script>
 </body>
 </html>
