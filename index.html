@@ -7,6 +7,7 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
     --ink:#1B2A4A;
@@ -41,11 +42,13 @@
     background-repeat:no-repeat;
   }
   h1,h2,h3,.serif{font-family:'Noto Serif TC', serif;}
-  .app{position:relative; z-index:1; max-width:960px; margin:0 auto; padding:32px 20px 80px;}
+  .app{position:relative; z-index:1; max-width:1320px; margin:0 auto; padding:32px 32px 80px;}
   .brand{text-align:center; margin-bottom:28px;}
   .brand .eyebrow{letter-spacing:.35em; font-size:11px; color:var(--gold-soft); text-transform:uppercase; margin-bottom:8px;}
-  .brand h1{font-size:clamp(28px,5vw,42px); font-weight:900; margin:0; color:var(--parchment);}
+  .brand h1{font-size:38px; font-weight:900; margin:0; color:var(--parchment);}
   .brand .sub{font-size:13px; color:#a9b6d6; margin-top:6px;}
+
+  .setup-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start;}
 
   .card{
     background: linear-gradient(180deg, rgba(245,240,225,.06), rgba(245,240,225,.02));
@@ -72,6 +75,9 @@
   textarea{width:100%; min-height:90px; resize:vertical; line-height:1.6;}
   input[type=color]{width:40px; height:36px; padding:2px; border-radius:8px; border:1px solid rgba(201,162,39,.35); background:transparent; cursor:pointer;}
 
+  .swatch-wrap{position:relative; width:26px; height:26px; flex:none;}
+  .swatch-wrap input[type=color]{position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; padding:0; border:none;}
+
   .btn{
     appearance:none; border:none; cursor:pointer;
     font-family:inherit; font-weight:700; font-size:14px;
@@ -85,21 +91,28 @@
   .btn.ghost{background:transparent; color:var(--gold-soft); border:1px solid rgba(201,162,39,.4); box-shadow:none;}
   .btn.danger{background:transparent; color:#e3a5a5; border:1px solid rgba(227,165,165,.45); box-shadow:none;}
   .btn.small{padding:6px 14px; font-size:12px;}
+  .btn.ghost.active{background:rgba(201,162,39,.22); color:var(--parchment);}
+  .btn.warn{background:#c0562e; color:#fff2e6; box-shadow:0 6px 18px rgba(192,86,46,.35);}
+
+  .family-group{margin-bottom:16px;}
+  .family-group-head{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .tally-dot{width:10px; height:10px; border-radius:50%; display:inline-block; flex:none;}
 
   .family-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
   .family-row input[type=text]{flex:1; min-width:120px;}
-  .swatch{width:22px; height:22px; border-radius:50%; flex:none; border:2px solid rgba(255,255,255,.35);}
+  .swatch{width:22px; height:22px; border-radius:50%; flex:none; border:2px solid rgba(255,255,255,.35); pointer-events:none;}
 
   .cohort-block{border-top:1px dashed rgba(201,162,39,.25); padding-top:16px; margin-top:16px;}
   .cohort-head{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px;}
   .pill{font-size:11px; padding:3px 10px; border-radius:999px; background:rgba(201,162,39,.15); color:var(--gold-soft); border:1px solid rgba(201,162,39,.3);}
 
   /* Stage */
-  .stage{
-    display:flex; flex-direction:column; align-items:center; padding:40px 20px 30px;
-  }
+  .stage-grid{display:grid; grid-template-columns:440px 1fr; gap:36px; align-items:start; padding:8px 8px 20px;}
+  .stage-left{display:flex; flex-direction:column; align-items:center;}
+  .stage-right{display:flex; flex-direction:column; min-width:0;}
+  .roster-title{font-size:14px; color:var(--gold-soft); margin:4px 0 14px; font-weight:700; letter-spacing:.04em;}
   .progress-line{font-size:13px; color:#a9b6d6; margin-bottom:22px; letter-spacing:.05em;}
-  .dial-wrap{position:relative; width:min(78vw,300px); height:min(78vw,300px); margin-bottom:26px;}
+  .dial-wrap{position:relative; width:300px; height:300px; margin-bottom:26px; flex:none;}
   .dial{
     width:100%; height:100%; border-radius:50%;
     box-shadow:0 20px 60px rgba(0,0,0,.45), inset 0 0 0 6px rgba(0,0,0,.25), inset 0 0 30px rgba(0,0,0,.35);
@@ -134,21 +147,28 @@
   .reveal-card{
     text-align:center; min-height:64px;
   }
-  .reveal-name{font-size:clamp(24px,5vw,34px); font-weight:900; margin:0 0 4px;}
+  .reveal-name{font-size:32px; font-weight:900; margin:0 0 4px;}
   .reveal-family{font-size:15px; font-weight:700; letter-spacing:.06em; opacity:0; transform:translateY(6px); transition:all .5s ease;}
   .reveal-family.show{opacity:1; transform:translateY(0);}
 
   .stage-actions{display:flex; gap:14px; margin-top:28px;}
 
-  .tally{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:30px;}
-  .tally-item{
-    background:rgba(10,16,32,.4); border:1px solid rgba(201,162,39,.25); border-radius:12px;
-    padding:10px 14px; min-width:110px; text-align:center;
+  .family-roster{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+    gap:14px; align-content:start;
   }
-  .tally-dot{width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:6px;}
-  .tally-count{font-family:'Noto Serif TC',serif; font-weight:900; font-size:18px;}
-  .bar{height:5px; border-radius:999px; background:rgba(255,255,255,.12); margin-top:6px; overflow:hidden;}
-  .bar > i{display:block; height:100%; border-radius:999px;}
+  .roster-card{
+    background:rgba(10,16,32,.4); border:1px solid rgba(201,162,39,.25); border-radius:14px;
+    padding:14px 16px; display:flex; flex-direction:column; min-height:0;
+  }
+  .roster-head{display:flex; align-items:center; gap:10px; margin-bottom:8px;}
+  .roster-dot{width:12px; height:12px; border-radius:50%; flex:none;}
+  .roster-head strong{flex:1; font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .roster-count{font-family:'Noto Serif TC',serif; font-weight:900; font-size:17px; color:var(--gold-soft); flex:none;}
+  .roster-names{list-style:none; margin:10px 0 0; padding:0; font-size:13px; line-height:1.7; max-height:220px; overflow-y:auto;}
+  .roster-names li{padding:2px 0; display:flex; align-items:center; gap:6px;}
+  .cohort-dot{width:8px; height:8px; border-radius:50%; flex:none;}
+  .roster-empty{font-size:12px; color:#7d88a8; padding:2px 0;}
 
   table{width:100%; border-collapse:collapse; font-size:13px;}
   th,td{padding:8px 10px; text-align:left; border-bottom:1px solid rgba(201,162,39,.18);}
@@ -160,7 +180,14 @@
   .flex-between{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;}
   select{cursor:pointer;}
   ::selection{background:rgba(201,162,39,.4);}
+  @media (max-width:980px){
+    .setup-grid{grid-template-columns:1fr;}
+    .stage-grid{grid-template-columns:1fr;}
+    .family-roster{grid-template-columns:1fr 1fr;}
+  }
   @media (max-width:520px){
+    .app{padding:24px 16px 60px;}
+    .dial-wrap{width:min(78vw,300px); height:min(78vw,300px);}
     .stage-actions{flex-direction:column; width:100%;}
     .stage-actions .btn{width:100%;}
   }
@@ -169,6 +196,7 @@
 <body>
 <div class="stars"></div>
 <div class="app">
+  <button class="btn ghost small" id="sound-toggle" onclick="toggleSound()" style="position:absolute; top:24px; right:24px; z-index:5;">🔊 音效</button>
   <div class="brand">
     <div class="eyebrow">National Dong Hwa EMBA</div>
     <h1>分派典禮</h1>
@@ -177,42 +205,46 @@
 
   <!-- SETUP VIEW -->
   <div id="view-setup">
-    <div class="card">
-      <div class="flex-between">
-        <h2>家族設定</h2>
-        <button class="btn ghost small" onclick="addFamily()">＋ 新增家族</button>
-      </div>
-      <div id="family-list"></div>
-      <div class="hint">建議 3～6 個家族。顏色會用在羅盤與名單標示上，請盡量選擇彼此有區隔的顏色。</div>
-    </div>
-
-    <div class="card">
-      <div class="flex-between">
-        <h2>屆別名單</h2>
-        <button class="btn ghost small" onclick="addCohort()">＋ 新增屆別</button>
-      </div>
-      <div id="cohort-list"></div>
-      <div class="hint">每個屆別貼上名單（一行一位）。系統會在該屆內，把人數盡量平均分給每個家族，多出的名額會隨機分配給不同家族，不會每次都是同一個家族多一位。</div>
-    </div>
-
-    <div class="card">
-      <h2>開始儀式</h2>
-      <div class="row" style="gap:16px; align-items:flex-end;">
-        <div>
-          <label>選擇要進行的屆別</label>
-          <select id="cohort-select"></select>
+    <div class="setup-grid">
+      <div class="card">
+        <div class="flex-between">
+          <h2>家族設定</h2>
+          <div class="row">
+            <button class="btn ghost small" id="overview-toggle-btn" onclick="toggleOverviewPanel()">顯示全部分類名單</button>
+            <button class="btn ghost small" onclick="addFamily()">＋ 新增家族</button>
+          </div>
         </div>
-        <button class="btn" id="start-btn" onclick="startCeremony()">開始這一屆的分派</button>
+        <div id="family-list"></div>
+        <div class="hint">顏色會用在羅盤與名單標示上，請盡量選擇彼此有區隔的顏色。</div>
+      </div>
+
+      <div class="card">
+        <div class="flex-between">
+          <h2>屆別名單</h2>
+          <button class="btn ghost small" onclick="addCohort()">＋ 新增屆別</button>
+        </div>
+        <div id="cohort-list"></div>
+        <div class="hint">每個屆別貼上名單（一行一位）。系統會在該屆內，把人數盡量平均分給每個家族，多出的名額會隨機分配給不同家族，不會每次都是同一個家族多一位。</div>
+      </div>
+    </div>
+
+    <div class="card" id="setup-overview-panel" style="display:none;">
+      <div class="flex-between">
+        <h2>全部分類總覽</h2>
+        <button class="btn ghost small" onclick="exportAllXLSX()">匯出 Excel（分家族分頁）</button>
+      </div>
+      <div id="overview-content"></div>
+    </div>
+
+    <div class="card">
+      <h2>開始分派</h2>
+      <div class="row" style="gap:16px; align-items:center;">
+        <button class="btn" id="start-btn" onclick="startCeremonySequence()">開始分派</button>
+        <button class="btn ghost" id="view-results-btn" onclick="viewResultsStage()" style="display:none;">返回名單畫面</button>
       </div>
       <div class="hint" id="setup-warning"></div>
-    </div>
-
-    <div class="card" id="past-results-card" style="display:none;">
-      <div class="flex-between">
-        <h2>已完成的屆別</h2>
-        <button class="btn ghost small" onclick="exportAllCSV()">匯出全部結果 CSV</button>
-      </div>
-      <div id="past-results-list"></div>
+      <div class="hint" id="sequence-order-hint"></div>
+      <div class="hint">會依照上方「屆別名單」排列的順序，一屆接著一屆進行儀式；沒有名單的屆別會自動略過。「返回名單畫面」只是查看目前結果（會套用最新的家族名稱／顏色），不會重新抽籤。</div>
     </div>
   </div>
 
@@ -222,38 +254,34 @@
       <button class="btn ghost small" onclick="backToSetup()">← 返回設定</button>
     </div>
     <div class="card">
-      <div class="stage">
-        <div class="progress-line" id="stage-progress">第 1 / 1 位　｜　114屆</div>
+      <div class="stage-grid">
+        <div class="stage-left">
+          <div class="progress-line" id="stage-progress">第 1 / 1 位　｜　114屆</div>
 
-        <div class="dial-wrap">
-          <div class="dial" id="dial"></div>
-          <div class="needle" id="needle"></div>
-          <div class="dial-center" id="dial-center">準備中</div>
+          <div class="dial-wrap">
+            <div class="dial" id="dial"></div>
+            <div class="needle" id="needle"></div>
+            <div class="dial-center" id="dial-center">準備中</div>
+          </div>
+
+          <div class="reveal-card">
+            <p class="reveal-name" id="reveal-name">﹘</p>
+            <p class="reveal-family" id="reveal-family">分配至　家族名稱</p>
+          </div>
+
+          <div class="stage-actions">
+            <button class="btn" id="action-btn" onclick="handleAction()">唱名分類</button>
+          </div>
+          <div class="hint" style="text-align:center;">按下按鈕，或按空白鍵操作</div>
         </div>
 
-        <div class="reveal-card">
-          <p class="reveal-name" id="reveal-name">﹘</p>
-          <p class="reveal-family" id="reveal-family">分配至　家族名稱</p>
+        <div class="stage-right">
+          <div class="flex-between" style="margin-bottom:14px;">
+            <div class="roster-title" style="margin:0;">家族即時名單</div>
+            <button class="btn ghost small" onclick="exportAllXLSX()">匯出 Excel</button>
+          </div>
+          <div class="family-roster" id="family-roster"></div>
         </div>
-
-        <div class="stage-actions">
-          <button class="btn" id="sort-btn" onclick="runSort()">唱名分類</button>
-          <button class="btn ghost" id="next-btn" onclick="nextStudent()" disabled>下一位 →</button>
-        </div>
-
-        <div class="tally" id="tally"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- COHORT DONE VIEW -->
-  <div id="view-done" style="display:none;">
-    <div class="card">
-      <h2 id="done-title">本屆分派完成</h2>
-      <table id="done-table"><thead><tr><th>#</th><th>姓名</th><th>家族</th></tr></thead><tbody></tbody></table>
-      <div class="row" style="margin-top:18px;">
-        <button class="btn" onclick="backToSetup()">返回設定，進行下一屆</button>
-        <button class="btn ghost" onclick="exportCohortCSV()">匯出本屆 CSV</button>
       </div>
     </div>
   </div>
@@ -298,7 +326,10 @@ function renderFamilies(){
     const row = document.createElement('div');
     row.className = 'family-row';
     row.innerHTML = `
-      <input type="color" value="${f.color}" onchange="updateFamily(${idx},'color',this.value)">
+      <div class="swatch-wrap">
+        <div class="swatch" style="background:${f.color}"></div>
+        <input type="color" value="${f.color}" onchange="updateFamily(${idx},'color',this.value)">
+      </div>
       <input type="text" value="${f.name}" placeholder="家族名稱" onchange="updateFamily(${idx},'name',this.value)">
       <button class="btn danger small" onclick="removeFamily(${idx})" ${state.families.length<=2?'disabled':''}>移除</button>
     `;
@@ -310,16 +341,15 @@ function addFamily(){
   const color = palette[state.families.length % palette.length];
   state.families.push({name:`家族${state.families.length+1}`, color});
   renderFamilies();
-  refreshCohortSelect();
 }
 function removeFamily(idx){
   if(state.families.length<=2) return;
   state.families.splice(idx,1);
   renderFamilies();
-  refreshCohortSelect();
 }
 function updateFamily(idx,key,val){
   state.families[idx][key]=val;
+  renderFamilies();
 }
 
 /* ---------- 屆別設定 UI ---------- */
@@ -340,7 +370,7 @@ function renderCohorts(){
     `;
     wrap.appendChild(block);
   });
-  refreshCohortSelect();
+  updateSequenceOrderHint();
 }
 function addCohort(){
   state.cohorts.push({name:`第${state.cohorts.length+1}屆`, raw:''});
@@ -352,7 +382,6 @@ function removeCohort(idx){
   state.cohorts.splice(idx,1);
   delete state.results[removedName];
   renderCohorts();
-  renderPastResults();
 }
 function updateCohortName(idx,val){
   const oldName = state.cohorts[idx].name;
@@ -361,27 +390,22 @@ function updateCohortName(idx,val){
     delete state.results[oldName];
   }
   state.cohorts[idx].name = val;
-  refreshCohortSelect();
-  renderPastResults();
+  updateSequenceOrderHint();
 }
 function updateCohortRaw(idx,val){
   state.cohorts[idx].raw = val;
   const pill = document.querySelectorAll('.cohort-block .pill')[idx];
   if(pill) pill.textContent = `${parseNames(val).length} 人`;
+  updateSequenceOrderHint();
 }
 
-function refreshCohortSelect(){
-  const sel = document.getElementById('cohort-select');
-  const currentVal = sel.value;
-  sel.innerHTML = '';
-  state.cohorts.forEach(c=>{
-    const opt = document.createElement('option');
-    opt.value = c.name;
-    const done = state.results[c.name] ? '（已完成，重跑將覆蓋）' : '';
-    opt.textContent = c.name + done;
-    sel.appendChild(opt);
-  });
-  if([...sel.options].some(o=>o.value===currentVal)) sel.value = currentVal;
+function updateSequenceOrderHint(){
+  const el = document.getElementById('sequence-order-hint');
+  if(!el) return;
+  const withNames = state.cohorts.filter(c=>parseNames(c.raw).length>0);
+  el.textContent = withNames.length
+    ? `依序：${withNames.map(c=>c.name).join(' → ')}`
+    : '目前所有屆別都還沒有名單。';
 }
 
 /* ---------- 分配演算法 ---------- */
@@ -401,38 +425,95 @@ function assignFairly(names, familyCount){
   return shuffledNames.map((name, i)=>({name, familyIndex: familyPool[i]}));
 }
 
-/* ---------- 儀式流程 ---------- */
-function startCeremony(){
-  const sel = document.getElementById('cohort-select');
-  const cohortName = sel.value;
-  const cohort = state.cohorts.find(c=>c.name===cohortName);
-  const names = parseNames(cohort.raw);
+/* ---------- 儀式流程（多屆依序進行） ---------- */
+let sequencePlan = [];
+let planIndex = 0;
+
+function buildPlanFromCohorts(){
+  const plan = [];
+  state.cohorts.forEach(c=>{
+    const names = parseNames(c.raw);
+    if(names.length > 0){
+      plan.push({ cohortName: c.name, assignments: shuffle(assignFairly(names, state.families.length)) });
+    }
+  });
+  return plan;
+}
+
+function updateStartButtonUI(){
+  const btn = document.getElementById('start-btn');
+  const viewBtn = document.getElementById('view-results-btn');
+  const hasResults = Object.keys(state.results).length > 0;
+  if(hasResults){
+    btn.textContent = '重新分配（將清空目前所有結果）';
+    btn.classList.add('warn');
+    viewBtn.style.display = '';
+  } else {
+    btn.textContent = '開始分派';
+    btn.classList.remove('warn');
+    viewBtn.style.display = 'none';
+  }
+}
+
+function viewResultsStage(){
+  ceremony = null;
+  document.getElementById('view-setup').style.display = 'none';
+  document.getElementById('view-stage').style.display = 'block';
+  buildDial();
+  renderRoster();
+  updateRoster();
+
+  const totalCohorts = Object.keys(state.results).length;
+  document.getElementById('stage-progress').textContent = `🎉 全部 ${totalCohorts} 屆分派完成`;
+  document.getElementById('dial-center').textContent = '完成';
+  document.getElementById('dial-center').style.color = '';
+  document.getElementById('reveal-name').textContent = '分派完成';
+  const rf = document.getElementById('reveal-family');
+  rf.textContent = '右側為完整名單，可隨時匯出 Excel';
+  rf.style.color = '';
+  rf.classList.add('show');
+
+  const btn = document.getElementById('action-btn');
+  btn.disabled = false;
+  btn.textContent = '返回設定，開始新一輪 →';
+  stageAction = 'done';
+}
+
+function startCeremonySequence(){
   const warn = document.getElementById('setup-warning');
   warn.textContent = '';
 
-  if(!cohort){ return; }
-  if(names.length === 0){
-    warn.textContent = `「${cohortName}」目前沒有名單，請先貼上學員姓名。`;
-    return;
-  }
   if(state.families.length < 2){
     warn.textContent = '請至少設定 2 個家族。';
     return;
   }
 
-  const assignments = assignFairly(names, state.families.length);
-  ceremony = {
-    cohortName,
-    queue: shuffle(assignments), // 揭曉順序打亂，跟分配結果彼此獨立
-    index: 0,
-    done: []
-  };
+  const plan = buildPlanFromCohorts();
+  if(plan.length === 0){
+    warn.textContent = '目前所有屆別都沒有名單，請先貼上學員姓名。';
+    return;
+  }
+
+  const hasResults = Object.keys(state.results).length > 0;
+  if(hasResults){
+    const ok = confirm('確定要清空目前所有分派結果，重新開始嗎？');
+    if(!ok) return;
+  }
+
+  state.results = {};
+  sequencePlan = plan;
+  planIndex = 0;
 
   document.getElementById('view-setup').style.display = 'none';
-  document.getElementById('view-done').style.display = 'none';
   document.getElementById('view-stage').style.display = 'block';
   buildDial();
-  renderTally();
+  renderRoster();
+  beginCurrentCohort();
+}
+
+function beginCurrentCohort(){
+  const plan = sequencePlan[planIndex];
+  ceremony = { cohortName: plan.cohortName, queue: plan.assignments, index: 0, done: [] };
   showCurrentStudent();
 }
 
@@ -444,18 +525,24 @@ function buildDial(){
   dial.style.background = `conic-gradient(${stops})`;
 }
 
+let stageAction = 'sort'; // 'sort' | 'next' | 'advance-cohort' | 'finish' | 'done'
+
 function showCurrentStudent(){
   const {queue, index, cohortName} = ceremony;
-  document.getElementById('stage-progress').textContent = `第 ${index+1} / ${queue.length} 位　｜　${cohortName}`;
+  const cohortProgress = sequencePlan.length > 1 ? `　（第 ${planIndex+1}／${sequencePlan.length} 屆）` : '';
+  document.getElementById('stage-progress').textContent = `第 ${index+1} / ${queue.length} 位　｜　${cohortName}${cohortProgress}`;
   document.getElementById('reveal-name').textContent = queue[index].name;
   const rf = document.getElementById('reveal-family');
   rf.classList.remove('show');
   rf.textContent = '';
+  rf.style.color = '';
   document.getElementById('dial-center').textContent = '準備中';
   document.getElementById('dial-center').style.color = '';
-  document.getElementById('sort-btn').disabled = false;
-  document.getElementById('sort-btn').textContent = '唱名分類';
-  document.getElementById('next-btn').disabled = true;
+
+  stageAction = 'sort';
+  const btn = document.getElementById('action-btn');
+  btn.disabled = false;
+  btn.textContent = '唱名分類';
 
   const needle = document.getElementById('needle');
   needle.classList.remove('spinning');
@@ -463,6 +550,34 @@ function showCurrentStudent(){
   needle.style.transition = 'none';
   needle.style.transform = `translate(-50%,-100%) rotate(0deg)`;
   void needle.offsetWidth; // reflow
+}
+
+function handleAction(){
+  if(stageAction === 'sort'){
+    runSort();
+  } else if(stageAction === 'next'){
+    ceremony.index++;
+    showCurrentStudent();
+  } else if(stageAction === 'advance-cohort'){
+    state.results[ceremony.cohortName] = ceremony.done;
+    planIndex++;
+    beginCurrentCohort();
+  } else if(stageAction === 'finish'){
+    state.results[ceremony.cohortName] = ceremony.done;
+    ceremony = null;
+    document.getElementById('stage-progress').textContent = `🎉 全部 ${sequencePlan.length} 屆分派完成`;
+    document.getElementById('dial-center').textContent = '完成';
+    document.getElementById('reveal-name').textContent = '分派完成';
+    const rf = document.getElementById('reveal-family');
+    rf.textContent = '右側為完整名單，可隨時匯出 Excel';
+    rf.style.color = '';
+    rf.classList.add('show');
+    const btn = document.getElementById('action-btn');
+    btn.textContent = '返回設定，開始新一輪 →';
+    stageAction = 'done';
+  } else if(stageAction === 'done'){
+    backToSetup();
+  }
 }
 
 function runSort(){
@@ -478,8 +593,10 @@ function runSort(){
   needle.classList.add('spinning');
   needle.style.transition = 'transform 2.6s cubic-bezier(.15,.85,.25,1)';
   needle.style.transform = `translate(-50%,-100%) rotate(${spins}deg)`;
+  playSpinTicks(2600);
 
-  document.getElementById('sort-btn').disabled = true;
+  const btn = document.getElementById('action-btn');
+  btn.disabled = true;
 
   setTimeout(()=>{
     const center = document.getElementById('dial-center');
@@ -489,121 +606,189 @@ function runSort(){
     rf.textContent = `分配至　${family.name}`;
     rf.style.color = family.color;
     rf.classList.add('show');
+    playDing();
 
-    ceremony.done.push(current);
-    updateTallyCounts();
-    document.getElementById('next-btn').disabled = false;
-    document.getElementById('sort-btn').textContent = '已分類';
+    ceremony.done.push({name: current.name, familyIndex: current.familyIndex, cohort: ceremony.cohortName});
+    updateRoster();
+
+    const isLastOfCohort = (ceremony.index + 1 >= ceremony.queue.length);
+    if(isLastOfCohort){
+      const isLastCohort = (planIndex + 1 >= sequencePlan.length);
+      if(isLastCohort){
+        stageAction = 'finish';
+        btn.textContent = '完成活動，查看名單 →';
+      } else {
+        stageAction = 'advance-cohort';
+        btn.textContent = `接續下一屆（${sequencePlan[planIndex+1].cohortName}）→`;
+      }
+    } else {
+      stageAction = 'next';
+      btn.textContent = '下一位 →';
+    }
+    btn.disabled = false;
   }, 2650);
 }
 
-function nextStudent(){
-  ceremony.index++;
-  if(ceremony.index >= ceremony.queue.length){
-    finishCeremony();
-    return;
-  }
-  showCurrentStudent();
-}
-
-function finishCeremony(){
-  state.results[ceremony.cohortName] = ceremony.done;
-  document.getElementById('view-stage').style.display = 'none';
-  document.getElementById('view-done').style.display = 'block';
-  document.getElementById('done-title').textContent = `${ceremony.cohortName}　分派完成`;
-  const tbody = document.querySelector('#done-table tbody');
-  tbody.innerHTML = '';
-  ceremony.done.forEach((d,i)=>{
-    const fam = state.families[d.familyIndex];
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${i+1}</td><td>${escapeHtml(d.name)}</td><td style="color:${fam.color};font-weight:700;">${escapeHtml(fam.name)}</td>`;
-    tbody.appendChild(tr);
-  });
-}
+document.addEventListener('keydown', (e)=>{
+  if(e.code !== 'Space') return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if(tag === 'TEXTAREA' || tag === 'INPUT' || tag === 'SELECT') return;
+  const stageVisible = document.getElementById('view-stage').style.display !== 'none';
+  if(!stageVisible) return;
+  const btn = document.getElementById('action-btn');
+  if(btn.disabled) return;
+  e.preventDefault();
+  handleAction();
+});
 
 function backToSetup(){
   ceremony = null;
+  sequencePlan = [];
+  planIndex = 0;
   document.getElementById('view-stage').style.display = 'none';
-  document.getElementById('view-done').style.display = 'none';
   document.getElementById('view-setup').style.display = 'block';
-  refreshCohortSelect();
-  renderPastResults();
+  renderCohorts(); // 重新整理順序提示
+  updateStartButtonUI();
+  document.getElementById('setup-overview-panel').style.display = 'none';
+  document.getElementById('overview-toggle-btn').textContent = '顯示全部分類名單';
 }
 
-/* ---------- 即時累計看板 ---------- */
-function renderTally(){
-  const tally = document.getElementById('tally');
-  tally.innerHTML = '';
-  state.families.forEach((f)=>{
+
+/* ---------- 全部分類總覽（設定頁內嵌面板） ---------- */
+function buildOverviewData(){
+  const all = getAllAssignmentsSoFar();
+  const byFamily = state.families.map(f=>({family:f, members:[]}));
+  all.forEach(d=>{
+    if(byFamily[d.familyIndex]) byFamily[d.familyIndex].members.push({name:d.name, cohort:d.cohort});
+  });
+  return byFamily;
+}
+
+function renderOverview(){
+  const container = document.getElementById('overview-content');
+  const data = buildOverviewData();
+  const total = data.reduce((s,f)=>s+f.members.length,0);
+  if(total === 0){
+    container.innerHTML = '<div class="empty">目前還沒有任何分派結果，先按下方「開始分派」進行儀式吧。</div>';
+    return;
+  }
+  container.innerHTML = data.map(f=>`
+    <div class="family-group">
+      <div class="family-group-head">
+        <span class="tally-dot" style="background:${f.family.color}"></span>
+        <strong style="color:${f.family.color}">${escapeHtml(f.family.name)}</strong>
+        <span class="pill">${f.members.length} 人</span>
+      </div>
+      <table><thead><tr><th>#</th><th>姓名</th><th>屆別</th></tr></thead><tbody>
+        ${f.members.map((m,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(m.name)}</td><td>${escapeHtml(m.cohort)}</td></tr>`).join('') || '<tr><td colspan="3" class="empty">尚無成員</td></tr>'}
+      </tbody></table>
+    </div>
+  `).join('');
+}
+
+function toggleOverviewPanel(){
+  const panel = document.getElementById('setup-overview-panel');
+  const btn = document.getElementById('overview-toggle-btn');
+  const show = panel.style.display === 'none';
+  panel.style.display = show ? 'block' : 'none';
+  btn.textContent = show ? '隱藏全部分類名單' : '顯示全部分類名單';
+  if(show) renderOverview();
+}
+
+/* ---------- 家族即時名單看板 ---------- */
+const COHORT_COLOR_PALETTE = ['#e8cf82', '#8fb8c9', '#9fd6a0', '#c9a2d6'];
+function cohortColor(cohortName){
+  const order = state.cohorts.map(c=>c.name);
+  let idx = order.indexOf(cohortName);
+  if(idx === -1) idx = 0;
+  return COHORT_COLOR_PALETTE[idx % COHORT_COLOR_PALETTE.length];
+}
+
+function renderRoster(){
+  const wrap = document.getElementById('family-roster');
+  wrap.innerHTML = '';
+  state.families.forEach((f, idx)=>{
     const div = document.createElement('div');
-    div.className = 'tally-item';
-    div.id = `tally-${f.name}`;
+    div.className = 'roster-card';
+    div.id = `roster-${idx}`;
     div.innerHTML = `
-      <div><span class="tally-dot" style="background:${f.color}"></span>${escapeHtml(f.name)}</div>
-      <div class="tally-count" data-count="0">0</div>
-      <div class="bar"><i style="width:0%; background:${f.color};"></i></div>
+      <div class="roster-head">
+        <span class="roster-dot" style="background:${f.color}"></span>
+        <strong style="color:${f.color}">${escapeHtml(f.name)}</strong>
+        <span class="roster-count" data-count="0">0</span>
+      </div>
+      <ul class="roster-names"><li class="roster-empty">尚無成員</li></ul>
     `;
-    tally.appendChild(div);
+    wrap.appendChild(div);
   });
 }
-function updateTallyCounts(){
+function updateRoster(){
+  const all = getAllAssignmentsSoFar();
   const totalByFamily = new Array(state.families.length).fill(0);
-  ceremony.done.forEach(d=> totalByFamily[d.familyIndex]++);
-  const total = ceremony.done.length;
+  all.forEach(d=> totalByFamily[d.familyIndex]++);
   state.families.forEach((f,i)=>{
-    const el = document.getElementById(`tally-${f.name}`);
-    if(!el) return;
-    el.querySelector('.tally-count').textContent = totalByFamily[i];
-    const pct = total ? Math.round((totalByFamily[i]/ceremony.queue.length)*100) : 0;
-    el.querySelector('.bar > i').style.width = pct+'%';
+    const card = document.getElementById(`roster-${i}`);
+    if(!card) return;
+    card.querySelector('.roster-count').textContent = totalByFamily[i];
+    const list = card.querySelector('.roster-names');
+    const members = all.filter(d=>d.familyIndex===i);
+    list.innerHTML = members.length
+      ? members.map(m=>`<li><span class="cohort-dot" style="background:${cohortColor(m.cohort)}" title="${escapeHtml(m.cohort)}"></span>${escapeHtml(m.name)}</li>`).join('')
+      : '<li class="roster-empty">尚無成員</li>';
   });
 }
-
-/* ---------- 過往結果 / 匯出 ---------- */
-function renderPastResults(){
-  const card = document.getElementById('past-results-card');
-  const list = document.getElementById('past-results-list');
-  const names = Object.keys(state.results);
-  if(names.length===0){ card.style.display='none'; return; }
-  card.style.display = 'block';
-  list.innerHTML = '';
-  names.forEach(name=>{
-    const arr = state.results[name];
-    const row = document.createElement('div');
-    row.className = 'row';
-    row.style.justifyContent = 'space-between';
-    row.style.marginBottom = '8px';
-    row.innerHTML = `<span>${escapeHtml(name)}　<span class="pill">${arr.length} 人已分派</span></span>`;
-    list.appendChild(row);
-  });
-}
-
-function toCSV(rows){
-  const header = 'ID,姓名,家族\n';
-  const body = rows.map((d,i)=>`${i+1},${d.name},${state.families[d.familyIndex].name}`).join('\n');
-  return '\uFEFF'+header+body;
-}
-function downloadCSV(filename, content){
-  const blob = new Blob([content], {type:'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-function exportCohortCSV(){
-  if(!ceremony) return;
-  downloadCSV(`${ceremony.cohortName}_分派結果.csv`, toCSV(ceremony.done));
-}
-function exportAllCSV(){
-  const header = 'ID,屆別,姓名,家族\n';
-  let rows = [];
+function getAllAssignmentsSoFar(){
+  let all = [];
   Object.keys(state.results).forEach(cohortName=>{
-    state.results[cohortName].forEach(d=>{
-      rows.push(`${rows.length+1},${cohortName},${d.name},${state.families[d.familyIndex].name}`);
-    });
+    state.results[cohortName].forEach(d=> all.push(d));
   });
-  downloadCSV('全部屆別_分派結果.csv', '\uFEFF'+header+rows.join('\n'));
+  if(ceremony) all = all.concat(ceremony.done);
+  return all;
+}
+
+/* ---------- 匯出 ---------- */
+function buildFamilyWorkbook(entries){
+  // entries: [{name, cohort, familyIndex}]
+  const wb = XLSX.utils.book_new();
+  const cohortNames = [...new Set(entries.map(e=>e.cohort))];
+
+  // 總覽分頁：每個家族在每一屆的人數
+  const overviewRows = [['家族', ...cohortNames, '總計']];
+  state.families.forEach((f, idx)=>{
+    const row = [f.name];
+    let total = 0;
+    cohortNames.forEach(cn=>{
+      const count = entries.filter(e=>e.familyIndex===idx && e.cohort===cn).length;
+      row.push(count);
+      total += count;
+    });
+    row.push(total);
+    overviewRows.push(row);
+  });
+  const overviewSheet = XLSX.utils.aoa_to_sheet(overviewRows);
+  XLSX.utils.book_append_sheet(wb, overviewSheet, '總覽');
+
+  // 每個家族一個分頁
+  state.families.forEach((f, idx)=>{
+    const rows = [['姓名','屆別']];
+    entries.filter(e=>e.familyIndex===idx).forEach(e=> rows.push([e.name, e.cohort]));
+    const sheet = XLSX.utils.aoa_to_sheet(rows);
+    // 分頁名稱需唯一且不超過31字元，前面加編號避免重名
+    const safeName = `${idx+1}_${f.name}`.replace(/[\\\/\?\*\[\]:]/g,'').slice(0,31);
+    XLSX.utils.book_append_sheet(wb, sheet, safeName);
+  });
+
+  return wb;
+}
+
+function exportAllXLSX(){
+  const entries = getAllAssignmentsSoFar();
+  if(entries.length === 0){
+    alert('目前還沒有任何分派結果，無法匯出。');
+    return;
+  }
+  const wb = buildFamilyWorkbook(entries);
+  XLSX.writeFile(wb, '分派結果.xlsx');
 }
 
 function escapeHtml(str){
@@ -612,10 +797,65 @@ function escapeHtml(str){
   return div.innerHTML;
 }
 
+/* ---------- 音效（Web Audio API 即時合成，無外部檔案） ---------- */
+let soundEnabled = true;
+let audioCtx = null;
+
+function ensureAudioCtx(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function toggleSound(){
+  soundEnabled = !soundEnabled;
+  document.getElementById('sound-toggle').textContent = soundEnabled ? '🔊 音效' : '🔇 靜音';
+  if(soundEnabled) ensureAudioCtx();
+}
+
+function playSpinTicks(durationMs){
+  if(!soundEnabled) return;
+  const ctx = ensureAudioCtx();
+  const start = ctx.currentTime;
+  const total = durationMs / 1000;
+  let t = 0;
+  while(t < total){
+    const progress = t / total;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.value = 900;
+    osc.connect(gain).connect(ctx.destination);
+    gain.gain.setValueAtTime(0.05, start + t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + t + 0.02);
+    osc.start(start + t);
+    osc.stop(start + t + 0.03);
+    t += 0.06 + progress * 0.25; // 逐漸變慢，呼應指針減速
+  }
+}
+
+function playDing(){
+  if(!soundEnabled) return;
+  const ctx = ensureAudioCtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = 1046.5; // C6
+  osc.connect(gain).connect(ctx.destination);
+  const now = ctx.currentTime;
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.3, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
+  osc.start(now);
+  osc.stop(now + 0.9);
+}
+
 /* ---------- 初始化 ---------- */
 renderFamilies();
 renderCohorts();
-renderPastResults();
+updateStartButtonUI();
 </script>
 </body>
 </html>
