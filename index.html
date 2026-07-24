@@ -290,15 +290,94 @@
 <script>
 /* ---------- 狀態 ---------- */
 const DEFAULT_FAMILIES = [
-  {name:'翊風家族', color:'#8B2635'},
-  {name:'凌岳家族', color:'#1D3F72'},
-  {name:'臨川家族', color:'#2D5A3D'},
-  {name:'昭曜家族', color:'#B8860B'},
+  {name:'葛來分多', color:'#8B1E24'},
+  {name:'史萊哲林', color:'#1A472A'},
+  {name:'雷文克勞', color:'#1D3F72'},
+  {name:'赫夫帕夫', color:'#DAA520'},
+  {name:'波巴洞',   color:'#7EC8E3'},
+  {name:'德姆蘭',   color:'#4A1010'},
+  {name:'伊法魔尼', color:'#6B4C93'},
+];
+
+const DEFAULT_COHORTS = [
+  { name:'115屆', raw:
+`施馨婷
+劉兆恆
+許碧儀
+邱奕聖
+王蒐人
+何文翔
+高睿嶸
+王天儀
+許程揚
+賴秀綿
+曾俞翔
+黃勝鴻
+張雅晴
+蔡昇宏
+邱彬達
+李婉瑩
+杜宜臻
+郭敏凰
+黃怡雯
+龍學珮
+範聖儒` },
+  { name:'114屆', raw:
+`蔡莉君
+張瑜庭
+蘇賢源
+黃文廷
+王正文
+王傑熙
+李美霞
+謝淑雯
+朱淑蘭
+張一民
+溫策帆
+蘇玲
+王致遠
+黃士銘
+劉適維
+戴彩飛
+湯裴岑
+江怡儂
+李依華
+蔣晉元
+王巾綻
+江雯華
+鄭文榮
+黃淑惠
+施家琳
+黃琴貞
+趙文翠
+駱淨蓮` },
+  { name:'畢業校友', raw:
+`林志峰
+黃盈甄
+李長營
+蔡東洲
+林峙良
+徐瑢蓁
+顏美雲
+劉逸凡
+卓馨茹
+李少瑜
+向謹君
+張晶萍
+廖雅貞
+葉嘉駿
+黃彩芸
+鍾淑娟
+連祥延
+劉金米
+孫夢華
+張喬筑
+潘卉珍` },
 ];
 
 let state = {
   families: JSON.parse(JSON.stringify(DEFAULT_FAMILIES)),
-  cohorts: [ { name:'114屆', raw:'' }, { name:'115屆', raw:'' } ],
+  cohorts: JSON.parse(JSON.stringify(DEFAULT_COHORTS)),
   results: {} // cohortName -> [{name, familyIndex}]
 };
 
