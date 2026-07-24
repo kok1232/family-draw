@@ -300,28 +300,28 @@ const DEFAULT_FAMILIES = [
 ];
 
 const DEFAULT_COHORTS = [
-  { name:'115屆', raw:
-`施馨婷
-劉兆恆
-許碧儀
-邱奕聖
-王蒐人
-何文翔
-高睿嶸
-王天儀
-許程揚
-賴秀綿
-曾俞翔
-黃勝鴻
-張雅晴
-蔡昇宏
-邱彬達
-李婉瑩
-杜宜臻
-郭敏凰
-黃怡雯
-龍學珮
-範聖儒` },
+  { name:'畢業校友', raw:
+`林志峰
+黃盈甄
+李長營
+蔡東洲
+林峙良
+徐瑢蓁
+顏美雲
+劉逸凡
+卓馨茹
+李少瑜
+向謹君
+張晶萍
+廖雅貞
+葉嘉駿
+黃彩芸
+鍾淑娟
+連祥延
+劉金米
+孫夢華
+張喬筑
+潘卉珍` },
   { name:'114屆', raw:
 `蔡莉君
 張瑜庭
@@ -351,28 +351,28 @@ const DEFAULT_COHORTS = [
 黃琴貞
 趙文翠
 駱淨蓮` },
-  { name:'畢業校友', raw:
-`林志峰
-黃盈甄
-李長營
-蔡東洲
-林峙良
-徐瑢蓁
-顏美雲
-劉逸凡
-卓馨茹
-李少瑜
-向謹君
-張晶萍
-廖雅貞
-葉嘉駿
-黃彩芸
-鍾淑娟
-連祥延
-劉金米
-孫夢華
-張喬筑
-潘卉珍` },
+  { name:'115屆', raw:
+`高睿嶸
+杜宜臻
+郭敏凰
+李婉瑩
+許碧儀
+蔡昇宏
+張雅晴
+龍學珮
+王天儀
+黃怡雯
+劉兆恆
+邱奕聖
+許程揚
+范聖儒
+王芃人
+王郁齡
+黃勝鴻
+施馨婷
+曾俞翔
+賴秀綿
+何文翔` },
 ];
 
 let state = {
@@ -686,6 +686,7 @@ function runSort(){
     rf.style.color = family.color;
     rf.classList.add('show');
     playDing();
+    speakAssignment(current.name, family.name);
 
     ceremony.done.push({name: current.name, familyIndex: current.familyIndex, cohort: ceremony.cohortName});
     updateRoster();
@@ -891,7 +892,11 @@ function ensureAudioCtx(){
 function toggleSound(){
   soundEnabled = !soundEnabled;
   document.getElementById('sound-toggle').textContent = soundEnabled ? '🔊 音效' : '🔇 靜音';
-  if(soundEnabled) ensureAudioCtx();
+  if(soundEnabled){
+    ensureAudioCtx();
+  } else if('speechSynthesis' in window){
+    speechSynthesis.cancel();
+  }
 }
 
 function playSpinTicks(durationMs){
@@ -929,6 +934,41 @@ function playDing(){
   gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
   osc.start(now);
   osc.stop(now + 0.9);
+}
+
+/* ---------- 語音播報（Web Speech API，離線亦可運作，效果依裝置語音包而定） ---------- */
+let cachedVoice = null;
+function pickChineseVoice(){
+  if(!('speechSynthesis' in window)) return null;
+  const voices = speechSynthesis.getVoices();
+  if(!voices || voices.length === 0) return null;
+  return voices.find(v=>v.lang === 'zh-TW')
+      || voices.find(v=>/zh[-_]TW/i.test(v.lang))
+      || voices.find(v=>v.lang && v.lang.startsWith('zh'))
+      || null;
+}
+if('speechSynthesis' in window){
+  // 部分瀏覽器（尤其 iOS Safari）語音清單是非同步載入，先預先觸發一次
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged = ()=>{ cachedVoice = pickChineseVoice(); };
+}
+
+function speakAssignment(studentName, familyName){
+  if(!soundEnabled) return;
+  if(!('speechSynthesis' in window)) return; // 該瀏覽器不支援語音合成，靜默略過
+
+  // 噹一聲播完（約 0.9 秒）後再開口唸名字，避免兩個聲音疊在一起
+  setTimeout(()=>{
+    if(!soundEnabled) return;
+    speechSynthesis.cancel(); // 避免上一句還沒講完就疊加
+    const utter = new SpeechSynthesisUtterance(`${studentName}，歡迎加入${familyName}！`);
+    utter.lang = 'zh-TW';
+    const voice = cachedVoice || pickChineseVoice();
+    if(voice) utter.voice = voice;
+    utter.rate = 0.95;
+    utter.pitch = 1.05;
+    speechSynthesis.speak(utter);
+  }, 650);
 }
 
 /* ---------- 初始化 ---------- */
